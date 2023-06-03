@@ -1,4 +1,4 @@
-package com.themovieguide.org
+package com.themovieguide.org.features
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
