@@ -32,6 +32,7 @@ import com.themovieguide.domain.model.Movies
 import com.themovieguide.domain.states.showing.StateMovies
 import com.themovieguide.domain.utils.EMPTY
 import com.themovieguide.org.features.details.MovieDetailsViewModel
+import com.themovieguide.org.features.home.onClickMovie
 import com.themovieguide.org.features.utils.default_image
 import com.themovieguide.org.features.utils.imageUrl
 import com.themovieguide.org.features.utils.toast
