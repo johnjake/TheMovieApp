@@ -52,7 +52,7 @@ android {
 
 dependencies {
 
-    // implementation(project(":domain"))
+    implementation(project(":domain"))
 
     /** chucker interceptor **/
     debugImplementation("com.github.chuckerteam.chucker:library:3.5.2")
