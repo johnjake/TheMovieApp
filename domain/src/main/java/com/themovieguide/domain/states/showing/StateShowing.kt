@@ -11,11 +11,13 @@ sealed class StateShowing {
 
     data class OnSuccess(val data: Flow<List<Movies>>) : StateShowing()
     data class OnFailed(val error: String?) : StateShowing()
+    data class NoInternet(val data: Flow<List<Movies>>) : StateShowing()
 }
 
 sealed class StateMeta {
     data class OnSuccess(val data: String) : StateMeta()
     data class OnFailed(val error: String?) : StateMeta()
+    object NoInternet : StateMeta()
 }
 
 sealed class StateSingleMeta {

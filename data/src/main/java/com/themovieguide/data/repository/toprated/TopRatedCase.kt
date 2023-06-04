@@ -27,6 +27,11 @@ class TopRatedCase @Inject constructor(
                     StateShowing.HideLoader
                     StateShowing.OnFailed(error = response.error)
                 }
+                is StateMeta.NoInternet -> {
+                    StateShowing.HideLoader
+                    val movieDB = db.getMovies()
+                    StateShowing.OnSuccess(data = movieDB.castTopRatedFlowLists())
+                }
                 else -> {
                     StateShowing.HideLoader
                     StateShowing.OnFailed(error = "No response")

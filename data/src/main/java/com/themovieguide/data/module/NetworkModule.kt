@@ -3,6 +3,7 @@ package com.themovieguide.data.module
 import android.content.Context
 import com.themovieguide.data.BuildConfig
 import com.themovieguide.data.utils.ChuckerManager
+import com.themovieguide.data.utils.Connectivity
 import com.themovieguide.data.utils.CurlLoggerInterceptor
 import com.themovieguide.data.utils.json
 import dagger.Module
@@ -64,5 +65,13 @@ class NetworkModule {
         @ApplicationContext ctx: Context,
     ): ChuckerManager {
         return ChuckerManager(ctx)
+    }
+
+    @Singleton
+    @Provides
+    fun provideConnectivityManager(
+        @ApplicationContext ctx: Context,
+    ): Connectivity {
+        return Connectivity(ctx)
     }
 }

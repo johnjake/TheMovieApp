@@ -26,6 +26,11 @@ class UpcomingCase @Inject constructor(
                     StateShowing.HideLoader
                     StateShowing.OnFailed(error = response.error)
                 }
+                is StateMeta.NoInternet -> {
+                    StateShowing.HideLoader
+                    val movieDB = storage.getMovies()
+                    StateShowing.OnSuccess(data = movieDB.castUpcomingFlowLists())
+                }
                 else -> {
                     StateShowing.HideLoader
                     StateShowing.OnFailed(error = "No response")

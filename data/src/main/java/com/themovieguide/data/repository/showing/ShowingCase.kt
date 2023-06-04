@@ -28,6 +28,11 @@ class ShowingCase @Inject constructor(
                     StateShowing.HideLoader
                     StateShowing.OnFailed(error = response.error)
                 }
+                is StateMeta.NoInternet -> {
+                    StateShowing.HideLoader
+                    val moviesDB = db.getMovies()
+                    StateShowing.OnSuccess(data = moviesDB.toTheaterFlowLists())
+                }
                 else -> {
                     StateShowing.HideLoader
                     StateShowing.OnFailed(error = "No response")
