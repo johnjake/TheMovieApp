@@ -25,6 +25,17 @@ sealed class NavigationScreen(val route: String, var icon: ImageVector, var titl
             return "details_screen/$id"
         }
     }
+
+    object TelevisionScreen : NavigationScreen(
+        route = "television_screen/{id}",
+        icon = Icons.Default.Home,
+        title = "Television",
+    ) {
+        fun createRoute(id: String): String {
+            return "details_screen/$id"
+        }
+    }
+
     object Visited : NavigationScreen(
         route = "visited_screen",
         icon = Icons.Default.Houseboat,
