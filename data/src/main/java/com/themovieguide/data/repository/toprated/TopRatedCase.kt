@@ -1,5 +1,7 @@
 package com.themovieguide.data.repository.toprated
 
+import com.themovieguide.data.mapper.castTopRatedFlowLists
+import com.themovieguide.data.sources.local.repository.toprated.TopRatedDBRepository
 import com.themovieguide.domain.features.toprated.TopRated
 import com.themovieguide.domain.features.toprated.TopRatedRepository
 import com.themovieguide.domain.states.showing.StateMeta
@@ -8,14 +10,18 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class TopRatedCase @Inject constructor(private val repository: TopRated) : TopRatedRepository {
+class TopRatedCase @Inject constructor(
+    private val repository: TopRated,
+    private val db: TopRatedDBRepository
+) : TopRatedRepository {
     override suspend fun fetchTopRated(page: Int): StateShowing {
         return withContext(Dispatchers.IO) {
             StateShowing.ShowLoader
             when (val response = repository.topRated(page = page)) {
                 is StateMeta.OnSuccess -> {
                     StateShowing.HideLoader
-                    StateShowing.OnSuccess(data = response.data)
+                    val movieDB = db.getMovies()
+                    StateShowing.OnSuccess(data = movieDB.castTopRatedFlowLists())
                 }
                 is StateMeta.OnFailed -> {
                     StateShowing.HideLoader

@@ -1,20 +1,20 @@
-package com.themovieguide.data.sources.local.repository.theater
+package com.themovieguide.data.sources.local.repository.search
 
 import com.themovieguide.data.sources.local.database.AppDatabase
-import com.themovieguide.data.sources.local.model.TheaterDB
+import com.themovieguide.data.sources.local.model.SearchDB
 import com.themovieguide.data.utils.EMPTY
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class TheaterDBImpl @Inject constructor(
+class SearchDBImpl @Inject constructor(
     private var app: AppDatabase,
-) : InTheaterDBRepository {
-    override fun insertMovie(movie: TheaterDB) {
-        app.theaterDao().insertMovie(movie)
+) : SearchDBRepository {
+    override fun insertMovie(movie: SearchDB) {
+        app.searchDao().insertMovie(movie)
     }
 
-    override fun insertInTheater(movie: TheaterDB) {
-        app.theaterDao().insertOnTheater(
+    override fun insertSearch(movie: SearchDB) {
+        app.searchDao().insertOnSearch(
             movieKey = movie.movieKey,
             adult = movie.adult ?: false,
             backdropPath = movie.backdropPath ?: EMPTY,
@@ -33,23 +33,23 @@ class TheaterDBImpl @Inject constructor(
         )
     }
 
-    override fun getMovies(): Flow<List<TheaterDB>> {
-        return app.theaterDao().getMovies()
+    override fun getMovies(): Flow<List<SearchDB>> {
+        return app.searchDao().getMovies()
     }
 
-    override fun getMoviesByTitle(): Flow<List<TheaterDB>> {
-        return app.theaterDao().getMoviesByTitle()
+    override fun getMoviesByTitle(): Flow<List<SearchDB>> {
+        return app.searchDao().getMoviesByTitle()
     }
 
-    override suspend fun getMovieById(movieId: Int): TheaterDB {
-        return app.theaterDao().getMovieById(movieId)
+    override suspend fun getMovieById(movieId: Int): SearchDB {
+        return app.searchDao().getMovieById(movieId)
     }
 
     override suspend fun deleteMovie(movieId: Int) {
-        app.theaterDao().deleteMovie(movieId)
+        app.topRatedDao().deleteMovie(movieId)
     }
 
     override suspend fun delete() {
-        app.theaterDao().delete()
+        app.topRatedDao().delete()
     }
 }

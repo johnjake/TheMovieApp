@@ -3,16 +3,24 @@ package com.themovieguide.data.mapper
 import com.themovieguide.data.model.dto.Result
 import com.themovieguide.data.model.dto.Videos
 import com.themovieguide.data.model.meta.DetailsMeta
+import com.themovieguide.data.sources.local.model.MovieDB
+import com.themovieguide.data.sources.local.model.SearchDB
+import com.themovieguide.data.sources.local.model.TheaterDB
+import com.themovieguide.data.sources.local.model.TopRatedDB
+import com.themovieguide.data.sources.local.model.UpcomingDB
 import com.themovieguide.data.utils.castToJson
 import com.themovieguide.data.utils.castToList
 import com.themovieguide.domain.model.BelongsCollectionEntity
 import com.themovieguide.domain.model.GenreEntity
 import com.themovieguide.domain.model.LanguageEntity
 import com.themovieguide.domain.model.Movie
+import com.themovieguide.domain.model.Movies
 import com.themovieguide.domain.model.ProductionCompanyEntity
 import com.themovieguide.domain.model.ProductionCountryEntity
 import com.themovieguide.domain.model.ResultEntity
 import com.themovieguide.domain.model.VideosEntity
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 fun DetailsMeta.toMovieEntity(): Movie {
     val genString = this.genres.castToJson()
@@ -80,4 +88,124 @@ fun Videos.toVideoList(): List<ResultEntity> {
     return this.results?.map {
         it.toEntity()
     } ?: emptyList()
+}
+
+fun Flow<List<MovieDB>>.toDomainFlowList(): Flow<List<Movies>> {
+    return this.map { list ->
+        list.map { db ->
+            Movies(
+                key = db.id,
+                adult = db.adult,
+                backdropPath = db.backdropPath,
+                genreIds = emptyList(),
+                id = db.movieKey,
+                originalLanguage = db.originalTitle,
+                originalTitle = db.originalTitle,
+                overview = db.overview,
+                popularity = db.popularity,
+                posterPath = db.posterPath,
+                releaseDate = db.visited.toString(),
+                title = db.title,
+                video = false,
+                voteAverage = db.voteAverage,
+                voteCount = db.voteCount,
+            )
+        }
+    }
+}
+
+fun Flow<List<TheaterDB>>.toTheaterFlowLists(): Flow<List<Movies>> {
+    return this.map { list ->
+        list.map { db ->
+            Movies(
+                key = db.movieKey,
+                adult = db.adult,
+                backdropPath = db.backdropPath,
+                genreIds = emptyList(),
+                id = db.id,
+                originalLanguage = db.originalTitle,
+                originalTitle = db.originalTitle,
+                overview = db.overview,
+                popularity = db.popularity,
+                posterPath = db.posterPath,
+                releaseDate = db.releaseDate,
+                title = db.title,
+                video = false,
+                voteAverage = db.voteAverage,
+                voteCount = db.voteCount,
+            )
+        }
+    }
+}
+
+fun Flow<List<SearchDB>>.castSearchFlowLists(): Flow<List<Movies>> {
+    return this.map { list ->
+        list.map { db ->
+            Movies(
+                key = db.movieKey,
+                adult = db.adult,
+                backdropPath = db.backdropPath,
+                genreIds = emptyList(),
+                id = db.id,
+                originalLanguage = db.originalTitle,
+                originalTitle = db.originalTitle,
+                overview = db.overview,
+                popularity = db.popularity,
+                posterPath = db.posterPath,
+                releaseDate = db.releaseDate,
+                title = db.title,
+                video = false,
+                voteAverage = db.voteAverage,
+                voteCount = db.voteCount,
+            )
+        }
+    }
+}
+
+fun Flow<List<TopRatedDB>>.castTopRatedFlowLists(): Flow<List<Movies>> {
+    return this.map { list ->
+        list.map { db ->
+            Movies(
+                key = db.movieKey,
+                adult = db.adult,
+                backdropPath = db.backdropPath,
+                genreIds = emptyList(),
+                id = db.id,
+                originalLanguage = db.originalTitle,
+                originalTitle = db.originalTitle,
+                overview = db.overview,
+                popularity = db.popularity,
+                posterPath = db.posterPath,
+                releaseDate = db.releaseDate,
+                title = db.title,
+                video = false,
+                voteAverage = db.voteAverage,
+                voteCount = db.voteCount,
+            )
+        }
+    }
+}
+
+fun Flow<List<UpcomingDB>>.castUpcomingFlowLists(): Flow<List<Movies>> {
+    return this.map { list ->
+        list.map { db ->
+            Movies(
+                key = db.movieKey,
+                adult = db.adult,
+                backdropPath = db.backdropPath,
+                genreIds = emptyList(),
+                id = db.id,
+                originalLanguage = db.originalTitle,
+                originalTitle = db.originalTitle,
+                overview = db.overview,
+                popularity = db.popularity,
+                posterPath = db.posterPath,
+                releaseDate = db.releaseDate,
+                title = db.title,
+                video = false,
+                voteAverage = db.voteAverage,
+                voteCount = db.voteCount,
+            )
+        }
+    }
 }

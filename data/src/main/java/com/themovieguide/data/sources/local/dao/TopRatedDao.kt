@@ -4,16 +4,16 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.themovieguide.data.sources.local.model.TheaterDB
+import com.themovieguide.data.sources.local.model.TopRatedDB
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-abstract class TheaterDao {
+abstract class TopRatedDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    abstract fun insertMovie(movie: TheaterDB)
+    abstract fun insertMovie(movie: TopRatedDB)
 
     @Query(
-        "insert into inTheater(movieKey, adult, backdropPath, genreIds, id, originalLanguage, originalTitle, overview, popularity, posterPath, releaseDate, title, video, voteAverage, voteCount) " +
+        "insert into topRated(movieKey, adult, backdropPath, genreIds, id, originalLanguage, originalTitle, overview, popularity, posterPath, releaseDate, title, video, voteAverage, voteCount) " +
             "select" +
             " :movieKey," +
             " :adult," +
@@ -30,9 +30,9 @@ abstract class TheaterDao {
             ":video, " +
             ":voteAverage, " +
             ":voteCount " +
-            "where not exists (select id From inTheater where id = :id)",
+            "where not exists (select id From topRated where id = :id)",
     )
-    abstract fun insertOnTheater(
+    abstract fun insertOnTopRated(
         movieKey: Int,
         adult: Boolean,
         backdropPath: String,
@@ -50,18 +50,18 @@ abstract class TheaterDao {
         voteCount: Int,
     )
 
-    @Query("select * from inTheater where id = :movieId")
-    abstract suspend fun getMovieById(movieId: Int): TheaterDB
+    @Query("select * from topRated where id = :movieId")
+    abstract suspend fun getMovieById(movieId: Int): TopRatedDB
 
-    @Query("select * from inTheater group by dbId")
-    abstract fun getMovies(): Flow<List<TheaterDB>>
+    @Query("select * from topRated group by dbId")
+    abstract fun getMovies(): Flow<List<TopRatedDB>>
 
-    @Query("select * from inTheater group by title")
-    abstract fun getMoviesByTitle(): Flow<List<TheaterDB>>
+    @Query("select * from topRated group by title")
+    abstract fun getMoviesByTitle(): Flow<List<TopRatedDB>>
 
-    @Query("DELETE FROM inTheater where id = :movieId")
+    @Query("DELETE FROM topRated where id = :movieId")
     abstract suspend fun deleteMovie(movieId: Int)
 
-    @Query("DELETE FROM inTheater")
+    @Query("DELETE FROM topRated")
     abstract suspend fun delete()
 }

@@ -2,12 +2,18 @@ package com.themovieguide.data.features.upcoming
 
 import com.themovieguide.data.BuildConfig
 import com.themovieguide.data.mapper.toMovieList
+import com.themovieguide.data.sources.local.mapper.castToUpcomingDB
+import com.themovieguide.data.sources.local.repository.upcoming.UpcomingDBRepository
 import com.themovieguide.data.sources.remote.ApiServices
+import com.themovieguide.data.utils.SUCCESS
 import com.themovieguide.domain.features.upcoming.Upcoming
 import com.themovieguide.domain.states.showing.StateMeta
 import javax.inject.Inject
 
-class UpcomingImpl @Inject constructor(private val api: ApiServices) : Upcoming {
+class UpcomingImpl @Inject constructor(
+    private val api: ApiServices,
+    private val storage: UpcomingDBRepository
+) : Upcoming {
     override suspend fun upcoming(page: Int): StateMeta {
         return try {
             val buildKey = BuildConfig.API_KEY
@@ -17,7 +23,11 @@ class UpcomingImpl @Inject constructor(private val api: ApiServices) : Upcoming 
             )
             val response = dto.results ?: emptyList()
             val data = response.toMovieList()
-            StateMeta.OnSuccess(data = data)
+            data.forEach { movie ->
+                val dbUpcoming = movie.castToUpcomingDB()
+                storage.insertUpcoming(dbUpcoming)
+            }
+            StateMeta.OnSuccess(data = SUCCESS)
         } catch (ex: Exception) {
             StateMeta.OnFailed(error = ex.message)
         }

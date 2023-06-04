@@ -2,12 +2,17 @@ package com.themovieguide.data.features.toprated
 
 import com.themovieguide.data.BuildConfig
 import com.themovieguide.data.mapper.toMovieList
+import com.themovieguide.data.sources.local.mapper.castToTopRatedDB
+import com.themovieguide.data.sources.local.repository.toprated.TopRatedDBRepository
 import com.themovieguide.data.sources.remote.ApiServices
 import com.themovieguide.domain.features.toprated.TopRated
 import com.themovieguide.domain.states.showing.StateMeta
 import javax.inject.Inject
 
-class TopRatedImpl @Inject constructor(private val api: ApiServices) : TopRated {
+class TopRatedImpl @Inject constructor(
+    private val api: ApiServices,
+    private val db: TopRatedDBRepository,
+) : TopRated {
     override suspend fun topRated(page: Int): StateMeta {
         return try {
             val buildKey = BuildConfig.API_KEY
@@ -17,7 +22,12 @@ class TopRatedImpl @Inject constructor(private val api: ApiServices) : TopRated 
             )
             val response = dto.results ?: emptyList()
             val result = response.toMovieList()
-            StateMeta.OnSuccess(data = result)
+
+            result.forEach { movie ->
+                val dbData = movie.castToTopRatedDB()
+                db.insertTopRated(dbData)
+            }
+            StateMeta.OnSuccess(data = "SUCCESS")
         } catch (ex: Exception) {
             StateMeta.OnFailed(error = ex.message)
         }

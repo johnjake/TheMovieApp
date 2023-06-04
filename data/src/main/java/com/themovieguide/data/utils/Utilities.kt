@@ -15,8 +15,18 @@ fun json(): Gson = GsonBuilder().apply {
 
 @TypeConverters
 fun String.castToLongDate(): String {
-    val date = Date(this.toLong())
+    val param = if (this.isNotEmpty()) this.toLong() else 1685747400000L
+    val date = Date(param)
     val dateFormat = SimpleDateFormat("MM/dd/yyyy hh:mm a", Locale.ENGLISH)
     return dateFormat.format(date)
 }
+
+@TypeConverters
+fun convertDateTimeToLong(dateTimeString: String): Long {
+    val dateFormat = SimpleDateFormat("M/d/yyyy h:mm a", Locale.getDefault())
+    val date = dateFormat.parse(dateTimeString)
+    return date?.time ?: 0L
+}
+
+const val SUCCESS = "success"
 

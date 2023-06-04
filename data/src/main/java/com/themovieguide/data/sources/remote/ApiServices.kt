@@ -32,13 +32,6 @@ interface ApiServices {
     ): DiscoverMeta
 
     @GET("3/movie/now_playing")
-    suspend fun nowShowing(
-        @Query("api_key") apiKey: String,
-        @Query("language") languages: String = "en-US",
-        @Query("page") pageNumber: Int = 1,
-    ): MovieMeta
-
-    @GET("3/movie/now_playing")
     suspend fun inTheater(
         @Query("api_key") apiKey: String,
         @Query("language") languages: String = "en-US",

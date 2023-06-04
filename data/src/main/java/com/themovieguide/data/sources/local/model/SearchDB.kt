@@ -4,8 +4,8 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.themovieguide.domain.utils.EMPTY
 
-@Entity(tableName = TheaterDB.TABLE_NAME_MOVIE)
-data class TheaterDB(
+@Entity(tableName = SearchDB.TABLE_NAME_MOVIE)
+data class SearchDB(
     @PrimaryKey(autoGenerate = true)
     val dbId: Int = 0,
     var movieKey: Int = 0,
@@ -44,6 +44,6 @@ data class TheaterDB(
     )
 
     companion object {
-        const val TABLE_NAME_MOVIE = "inTheater"
+        const val TABLE_NAME_MOVIE = "search"
     }
 }

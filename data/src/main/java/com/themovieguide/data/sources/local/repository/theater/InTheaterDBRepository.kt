@@ -5,8 +5,10 @@ import kotlinx.coroutines.flow.Flow
 
 interface InTheaterDBRepository {
     fun insertMovie(movie: TheaterDB)
+    fun insertInTheater(movie: TheaterDB)
     fun getMovies(): Flow<List<TheaterDB>>
     fun getMoviesByTitle(): Flow<List<TheaterDB>>
     suspend fun getMovieById(movieId: Int): TheaterDB
     suspend fun deleteMovie(movieId: Int)
+    suspend fun delete()
 }

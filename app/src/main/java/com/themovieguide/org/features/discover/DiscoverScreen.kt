@@ -124,7 +124,9 @@ private fun MovieInTheater(
                 val url = path.imageUrl()
                 val movieId = movie[index].id ?: 0
                 AsyncItemImgVisited(url = url, description = title, onClick = { onClickMovie(movieId = movieId, navController = navController) })
-                VisitedTitle(title = "${movie[index].releaseDate?.castToLongDate()}")
+                if (movie[index].releaseDate?.trim() != "null") {
+                    VisitedTitle(title = "${movie[index].releaseDate?.castToLongDate()}")
+                }
             }
         }
     }

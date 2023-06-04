@@ -1,6 +1,6 @@
 package com.themovieguide.data.module
 import com.themovieguide.data.features.cast.CastImpl
-import com.themovieguide.data.features.details.DbMovieRepository
+import com.themovieguide.data.features.details.DetailsMovieRepository
 import com.themovieguide.data.features.details.MovieDetailsImpl
 import com.themovieguide.data.features.search.SearchImpl
 import com.themovieguide.data.features.showing.ShowingImpl
@@ -11,10 +11,13 @@ import com.themovieguide.data.repository.cast.MovieCastCase
 import com.themovieguide.data.repository.details.MovieDetailsCase
 import com.themovieguide.data.repository.search.SearchCase
 import com.themovieguide.data.repository.showing.ShowingCase
-import com.themovieguide.data.repository.theater.InTheaterCase
 import com.themovieguide.data.repository.toprated.TopRatedCase
 import com.themovieguide.data.repository.upcoming.UpcomingCase
 import com.themovieguide.data.sources.local.database.AppDatabase
+import com.themovieguide.data.sources.local.repository.search.SearchDBRepository
+import com.themovieguide.data.sources.local.repository.theater.InTheaterDBRepository
+import com.themovieguide.data.sources.local.repository.toprated.TopRatedDBRepository
+import com.themovieguide.data.sources.local.repository.upcoming.UpcomingDBRepository
 import com.themovieguide.data.sources.remote.ApiServices
 import com.themovieguide.domain.features.cast.CastRepository
 import com.themovieguide.domain.features.cast.MovieCast
@@ -26,7 +29,6 @@ import com.themovieguide.domain.features.showing.LocalRepository
 import com.themovieguide.domain.features.showing.Showing
 import com.themovieguide.domain.features.showing.ShowingRepository
 import com.themovieguide.domain.features.theater.Theater
-import com.themovieguide.domain.features.theater.TheaterRepository
 import com.themovieguide.domain.features.toprated.TopRated
 import com.themovieguide.domain.features.toprated.TopRatedRepository
 import com.themovieguide.domain.features.upcoming.Upcoming
@@ -44,34 +46,31 @@ object ServiceModule {
     fun provideApiService(retrofit: Retrofit): ApiServices = retrofit.create(ApiServices::class.java)
 
     @Provides
-    fun provideShowing(api: ApiServices): Showing = ShowingImpl(api)
+    fun provideShowing(api: ApiServices, db: InTheaterDBRepository): Showing = ShowingImpl(api, db)
 
     @Provides
-    fun providesShowingRepository(repository: Showing): ShowingRepository = ShowingCase(repository)
+    fun providesShowingRepository(repository: Showing, db: InTheaterDBRepository): ShowingRepository = ShowingCase(repository, db)
 
     @Provides
-    fun provideTopRated(api: ApiServices): TopRated = TopRatedImpl(api)
+    fun provideTopRated(api: ApiServices, db: TopRatedDBRepository): TopRated = TopRatedImpl(api, db)
 
     @Provides
-    fun provideTopRatedCase(repository: TopRated): TopRatedRepository = TopRatedCase(repository)
+    fun provideTopRatedCase(repository: TopRated, db: TopRatedDBRepository): TopRatedRepository = TopRatedCase(repository, db)
 
     @Provides
-    fun provideUpcoming(api: ApiServices): Upcoming = UpcomingImpl(api)
+    fun provideUpcoming(api: ApiServices, storage: UpcomingDBRepository): Upcoming = UpcomingImpl(api, storage)
 
     @Provides
-    fun provideUpcomingCase(repository: Upcoming): UpcomingRepository = UpcomingCase(repository)
+    fun provideUpcomingCase(repository: Upcoming, storage: UpcomingDBRepository): UpcomingRepository = UpcomingCase(repository, storage)
 
     @Provides
-    fun provideInTheater(api: ApiServices): Theater = TheaterImpl(api)
+    fun provideInTheater(api: ApiServices, db: InTheaterDBRepository): Theater = TheaterImpl(api, db)
 
     @Provides
-    fun provideInTheaterCase(repository: Theater): TheaterRepository = InTheaterCase(repository)
+    fun providesSearchMovie(api: ApiServices, storage: SearchDBRepository): Search = SearchImpl(api, storage)
 
     @Provides
-    fun providesSearchMovie(api: ApiServices): Search = SearchImpl(api)
-
-    @Provides
-    fun providesSearchRepository(search: Search): SearchRepository = SearchCase(search)
+    fun providesSearchRepository(search: Search, storage: SearchDBRepository): SearchRepository = SearchCase(search, storage)
 
     @Provides
     fun providesMovieDetails(api: ApiServices): Details = MovieDetailsImpl(api)
@@ -86,5 +85,5 @@ object ServiceModule {
     fun providesCastRepository(repository: MovieCast): CastRepository = MovieCastCase(repository)
 
     @Provides
-    fun providesLocalRepository(db: AppDatabase): LocalRepository = DbMovieRepository(db)
+    fun providesLocalRepository(db: AppDatabase): LocalRepository = DetailsMovieRepository(db)
 }
