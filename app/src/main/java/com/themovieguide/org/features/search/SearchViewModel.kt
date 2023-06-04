@@ -9,6 +9,7 @@ import com.themovieguide.org.features.state.StateMovie
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -21,11 +22,15 @@ class SearchViewModel @Inject constructor(
 
     fun fetchUpcoming(query: String, page: Int) {
         viewModelScope.launch {
-            when (val state = repository.fetchSearch(query = query, page = page)) {
+            when (val response = repository.fetchSearch(query = query, page = page)) {
                 is StateShowing.ShowLoader -> searchFlow.emit(StateMovie.ShowLoader)
                 is StateShowing.HideLoader -> searchFlow.emit(StateMovie.HideLoader)
-                is StateShowing.OnSuccess -> searchFlow.emit(StateMovie.OnSuccess(data = state.data))
-                is StateShowing.OnFailed -> searchFlow.emit(StateMovie.OnFailure(error = state.error ?: "Unknown error"))
+                is StateShowing.OnSuccess -> {
+                    response.data.collectLatest { movieDB ->
+                        searchFlow.emit(StateMovie.OnSuccess(data = movieDB))
+                    }
+                }
+                is StateShowing.OnFailed -> searchFlow.emit(StateMovie.OnFailure(error = response.error ?: "Unknown error"))
                 else -> searchFlow.emit(StateMovie.HideLoader)
             }
         }

@@ -287,21 +287,21 @@ private fun homeUI(
                         onClickTop = { top ->
                             when {
                                 top -> topModel.fetchTopRated(1)
-                                else -> viewModel.getInTheater(1)
+                                else -> viewModel.getNowShowing()
                             }
                             onClickTop.value = top
                         },
                     )
 
                     LaunchedEffect(Unit) {
-                        viewModel.getInTheater(1)
+                        viewModel.getNowShowing()
                     }
                 }
                 Row {
                     if (onClickTop.value) {
                         TheaterShow(
                             navController = navController,
-                            viewModel = viewModel,
+                            mainList = mainList,
                             topViewModel = topModel,
                             movieList = comeList,
                             onClickTop,
@@ -309,7 +309,7 @@ private fun homeUI(
                     } else {
                         TheaterShow(
                             navController = navController,
-                            viewModel = viewModel,
+                            mainList = mainList,
                             topViewModel = topModel,
                             movieList = comeList,
                             onClickTop,
@@ -484,7 +484,7 @@ fun DotsIndicator(
 @Composable
 private fun TheaterShow(
     navController: NavHostController,
-    viewModel: ShowingViewModel,
+    mainList: MutableList<Movies>,
     topViewModel: TopRatedViewModel,
     movieList: MutableList<Movies>,
     theater: MutableState<Boolean>,
@@ -502,16 +502,7 @@ private fun TheaterShow(
             }
         }
         else -> {
-            val theaterModel = viewModel.theaterShared.collectAsStateWithLifecycle(initialValue = null)
-            /** observe in theater **/
-            /** observe in theater **/
-            when (val response = theaterModel.value) {
-                is StateMovie.HideLoader -> {}
-                is StateMovie.ShowLoader -> {}
-                is StateMovie.OnSuccess -> HandleMapIndex(navController = navController, ratedList = response.data, commonList = movieList)
-                is StateMovie.OnFailure -> Timber.e(" ${response.error}")
-                else -> { Timber.e("Home no response in Theater") }
-            }
+            HandleMapIndex(navController = navController, ratedList = mainList.toList(), commonList = movieList)
         }
     }
 }

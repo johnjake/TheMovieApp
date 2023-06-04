@@ -16,7 +16,7 @@ abstract class MovieDao {
     @Query("select * from movies where id = :movieId")
     abstract suspend fun getMovieById(movieId: Int): MovieDB
 
-    @Query("select * from movies group by movieKey")
+    @Query("select * from movies group by title")
     abstract fun getMovies(): Flow<List<MovieDB>>
 
     @Query("select * from movies group by title")

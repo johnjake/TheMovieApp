@@ -2,7 +2,7 @@ package com.themovieguide.org.features.details
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.themovieguide.data.features.details.DbMovieRepository
+import com.themovieguide.data.features.details.DetailsMovieRepository
 import com.themovieguide.domain.features.details.DetailsRepository
 import com.themovieguide.domain.model.Movie
 import com.themovieguide.domain.states.details.StateDetails
@@ -19,7 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MovieDetailsViewModel @Inject constructor(
     private val repository: DetailsRepository,
-    private val localRepository: DbMovieRepository,
+    private val localRepository: DetailsMovieRepository,
 ) : ViewModel() {
     private val showFlow: MutableSharedFlow<StateDetails> = MutableSharedFlow(replay = 1)
     val showShared: SharedFlow<StateDetails> = showFlow
