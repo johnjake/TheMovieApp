@@ -1,6 +1,7 @@
 package com.themovieguide.data.sources.local.mapper
 
 import com.themovieguide.data.sources.local.model.MovieDB
+import com.themovieguide.data.sources.local.model.TheaterDB
 import com.themovieguide.data.utils.castToClass
 import com.themovieguide.data.utils.castToJson
 import com.themovieguide.data.utils.castToList
@@ -9,9 +10,11 @@ import com.themovieguide.domain.model.GenreEntity
 import com.themovieguide.domain.model.LanguageEntity
 import com.themovieguide.domain.model.Movie
 import com.themovieguide.domain.model.MovieEntity
+import com.themovieguide.domain.model.Movies
 import com.themovieguide.domain.model.ProductionCompanyEntity
 import com.themovieguide.domain.model.ProductionCountryEntity
 import com.themovieguide.domain.model.VideosEntity
+import com.themovieguide.domain.utils.EMPTY
 
 fun Movie.castToMovieDB(): MovieDB {
     return MovieDB(
@@ -74,6 +77,26 @@ fun MovieDB.toMovieEntity(): MovieEntity {
         tagline = this.tagline,
         title = this.title,
         video = previewEntity,
+        voteAverage = this.voteAverage,
+        voteCount = this.voteCount,
+    )
+}
+
+fun Movies.castToTheaterDB(): TheaterDB {
+    return TheaterDB(
+        key = this.key,
+        adult = this.adult,
+        backdropPath = this.backdropPath,
+        genreIds = this.genreIds.castToJson(),
+        id = this.id,
+        originalLanguage = this.originalLanguage,
+        originalTitle = this.originalTitle,
+        overview = this.overview,
+        popularity = this.popularity,
+        posterPath = this.posterPath,
+        releaseDate = this.releaseDate,
+        title = this.title,
+        video = this.video,
         voteAverage = this.voteAverage,
         voteCount = this.voteCount,
     )

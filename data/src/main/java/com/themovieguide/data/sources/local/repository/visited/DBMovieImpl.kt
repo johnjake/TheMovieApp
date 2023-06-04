@@ -1,11 +1,11 @@
-package com.themovieguide.data.sources.local.repository
+package com.themovieguide.data.sources.local.repository.visited
 
 import com.themovieguide.data.sources.local.database.AppDatabase
 import com.themovieguide.data.sources.local.model.MovieDB
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class LocalMovieImpl @Inject constructor(private var app: AppDatabase) : LocalMovieRepository {
+class DBMovieImpl @Inject constructor(private var app: AppDatabase) : DBMovieRepository {
     override fun insertMovie(movie: MovieDB) {
         app.movieDao().insertMovie(movie = movie)
     }
