@@ -287,15 +287,11 @@ private fun homeUI(
                         onClickTop = { top ->
                             when {
                                 top -> topModel.fetchTopRated(1)
-                                else -> viewModel.getNowShowing()
+                                else -> Timber.e("fetch data from local")
                             }
                             onClickTop.value = top
                         },
                     )
-
-                    LaunchedEffect(Unit) {
-                        viewModel.getNowShowing()
-                    }
                 }
                 Row {
                     if (onClickTop.value) {
