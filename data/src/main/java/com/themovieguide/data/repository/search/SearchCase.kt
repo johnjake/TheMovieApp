@@ -18,7 +18,7 @@ class SearchCase @Inject constructor(
             when (val response = movie.searchMovie(query = query, page = page)) {
                 is StateMeta.OnSuccess -> {
                     StateShowing.HideLoader
-                    val movieDB = storage.getMovies()
+                    val movieDB = storage.getMovies(query)
                     StateShowing.OnSuccess(data = movieDB.castSearchFlowLists())
                 }
                 is StateMeta.OnFailed -> {
@@ -27,7 +27,7 @@ class SearchCase @Inject constructor(
                 }
                 is StateMeta.NoInternet -> {
                     StateShowing.HideLoader
-                    val movieDB = storage.getMovies()
+                    val movieDB = storage.getMovies(query)
                     StateShowing.OnSuccess(data = movieDB.castSearchFlowLists())
                 }
                 else -> {

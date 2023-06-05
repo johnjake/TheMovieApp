@@ -2,6 +2,7 @@ package com.themovieguide.data.module
 import com.themovieguide.data.features.cast.CastImpl
 import com.themovieguide.data.features.details.DetailsMovieRepository
 import com.themovieguide.data.features.details.MovieDetailsImpl
+import com.themovieguide.data.features.ratedtv.RatedTvImpl
 import com.themovieguide.data.features.search.SearchImpl
 import com.themovieguide.data.features.showing.ShowingImpl
 import com.themovieguide.data.features.theater.TheaterImpl
@@ -9,11 +10,13 @@ import com.themovieguide.data.features.toprated.TopRatedImpl
 import com.themovieguide.data.features.upcoming.UpcomingImpl
 import com.themovieguide.data.repository.cast.MovieCastCase
 import com.themovieguide.data.repository.details.MovieDetailsCase
+import com.themovieguide.data.repository.ratedtv.RatedTvShowCase
 import com.themovieguide.data.repository.search.SearchCase
 import com.themovieguide.data.repository.showing.ShowingCase
 import com.themovieguide.data.repository.toprated.TopRatedCase
 import com.themovieguide.data.repository.upcoming.UpcomingCase
 import com.themovieguide.data.sources.local.database.AppDatabase
+import com.themovieguide.data.sources.local.repository.ratedtv.RatedTelevisionDBRepository
 import com.themovieguide.data.sources.local.repository.search.SearchDBRepository
 import com.themovieguide.data.sources.local.repository.theater.InTheaterDBRepository
 import com.themovieguide.data.sources.local.repository.toprated.TopRatedDBRepository
@@ -24,6 +27,8 @@ import com.themovieguide.domain.features.cast.CastRepository
 import com.themovieguide.domain.features.cast.MovieCast
 import com.themovieguide.domain.features.details.Details
 import com.themovieguide.domain.features.details.DetailsRepository
+import com.themovieguide.domain.features.ratedtv.RatedTv
+import com.themovieguide.domain.features.ratedtv.RatedTvRepository
 import com.themovieguide.domain.features.search.Search
 import com.themovieguide.domain.features.search.SearchRepository
 import com.themovieguide.domain.features.showing.LocalRepository
@@ -87,4 +92,26 @@ object ServiceModule {
 
     @Provides
     fun providesLocalRepository(db: AppDatabase): LocalRepository = DetailsMovieRepository(db)
+
+    /** provide instance of television **/
+
+    @Provides
+    fun provideRatedTv(
+        remote: ApiServices,
+        storage: RatedTelevisionDBRepository,
+        signal: Connectivity,
+    ): RatedTv = RatedTvImpl(
+        api = remote,
+        storage = storage,
+        signal = signal,
+    )
+
+    @Provides
+    fun provideRatedRepository(
+        television: RatedTv,
+        storage: RatedTelevisionDBRepository,
+    ): RatedTvRepository = RatedTvShowCase(
+        television = television,
+        storage = storage,
+    )
 }

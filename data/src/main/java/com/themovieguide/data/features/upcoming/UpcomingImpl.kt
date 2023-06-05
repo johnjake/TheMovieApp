@@ -14,7 +14,7 @@ import javax.inject.Inject
 class UpcomingImpl @Inject constructor(
     private val api: ApiServices,
     private val storage: UpcomingDBRepository,
-    private val signal: Connectivity
+    private val signal: Connectivity,
 ) : Upcoming {
     override suspend fun upcoming(page: Int): StateMeta {
         return if (signal.isInternetConnected()) {
@@ -34,6 +34,8 @@ class UpcomingImpl @Inject constructor(
             } catch (ex: Exception) {
                 StateMeta.OnFailed(error = ex.message)
             }
-        } else StateMeta.NoInternet
+        } else {
+            StateMeta.NoInternet
+        }
     }
 }

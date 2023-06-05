@@ -43,7 +43,9 @@ import com.themovieguide.org.features.discover.DiscoverScreen
 import com.themovieguide.org.features.home.HomeCinema
 import com.themovieguide.org.features.home.ShowingViewModel
 import com.themovieguide.org.features.rated.TopRatedViewModel
+import com.themovieguide.org.features.ratedtv.RatedTelevisionViewModel
 import com.themovieguide.org.features.search.SearchViewModel
+import com.themovieguide.org.features.television.TelevisionScreen
 import com.themovieguide.org.features.upcoming.UpcomingViewModel
 import com.themovieguide.org.ui.theme.Gray800
 import com.themovieguide.org.ui.theme.PinkColor700
@@ -54,12 +56,14 @@ import kotlinx.coroutines.flow.collectLatest
 typealias mainScreen = NavigationScreen.MainScreen
 typealias visitedScreen = NavigationScreen.Visited
 typealias detailScreen = NavigationScreen.DetailScreen
+typealias televisionScreen = NavigationScreen.TelevisionScreen
 
 @Composable
 fun HomeScreen() {
     val navController = rememberNavController()
     val navigationItems = listOf(
         NavigationScreen.MainScreen,
+        NavigationScreen.TelevisionScreen,
         NavigationScreen.Visited,
     )
     val counterFlow = remember { MutableStateFlow(mainScreen.route) }
@@ -125,10 +129,17 @@ private fun Navigation(
             stateBottom.value = false
             LaunchHome(backStackEntry, navController)
         }
+
+        composable(televisionScreen.route) { backStackEntry ->
+            stateBottom.value = false
+            LaunchedTelevision(backStackEntry = backStackEntry, navController = navController)
+        }
+
         composable(visitedScreen.route) { backStackEntry ->
             stateBottom.value = false
             LaunchDiscover(backStackEntry, navController)
         }
+
         composable(detailScreen.route, arguments = detailArguments) { backStackEntry ->
             stateBottom.value = true
             val movieId = backStackEntry.arguments?.getString("id")
@@ -171,6 +182,28 @@ private fun LaunchHome(
         searchModel,
         navController,
     )
+}
+
+@Composable
+private fun LaunchedTelevision(
+    backStackEntry: NavBackStackEntry,
+    navController: NavHostController,
+) {
+    val tvEntry = remember(backStackEntry) {
+        navController.getBackStackEntry(mainScreen.route)
+    }
+
+    /** instance a viewmodel **/
+    val ratedModel = hiltViewModel<RatedTelevisionViewModel>(tvEntry)
+
+    /** fetch data from room **/
+    ratedModel.fetchTopRated()
+
+    /** observe data and get the data state **/
+    val ratedState = ratedModel.ratedShared.collectAsStateWithLifecycle(initialValue = null)
+
+    /** passing state or view model depends on the use case **/
+    TelevisionScreen(ratedState = ratedState.value)
 }
 
 @Composable
@@ -244,6 +277,7 @@ fun BottomNav(
 fun imagePainter(title: String): Painter {
     return when (title) {
         NavigationScreen.MainScreen.title -> painterResource(id = R.drawable.ic_now_showing)
+        NavigationScreen.TelevisionScreen.title -> painterResource(id = R.drawable.ic_television)
         NavigationScreen.Visited.title -> painterResource(id = R.drawable.ic_people_choice)
         else -> painterResource(id = R.drawable.ic_now_showing)
     }
