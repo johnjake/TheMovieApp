@@ -1,6 +1,8 @@
 package com.themovieguide.data.sources.local.module
 
 import com.themovieguide.data.sources.local.database.AppDatabase
+import com.themovieguide.data.sources.local.repository.discover.DiscoverDBImpl
+import com.themovieguide.data.sources.local.repository.discover.DiscoverDBRepository
 import com.themovieguide.data.sources.local.repository.ratedtv.RatedTelevisionDBImpl
 import com.themovieguide.data.sources.local.repository.ratedtv.RatedTelevisionDBRepository
 import com.themovieguide.data.sources.local.repository.search.SearchDBImpl
@@ -48,4 +50,7 @@ class StorageModule {
 
     @Provides
     fun provideStorageTodayAir(storage: AppDatabase): TodayAirDBRepository = TodayAirDBImpl(app = storage)
+
+    @Provides
+    fun provideStorageDiscover(storage: AppDatabase): DiscoverDBRepository = DiscoverDBImpl(app = storage)
 }

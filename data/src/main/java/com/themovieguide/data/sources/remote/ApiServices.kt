@@ -7,6 +7,7 @@ import com.themovieguide.data.model.meta.DiscoverMeta
 import com.themovieguide.data.model.meta.MovieMeta
 import com.themovieguide.data.model.meta.PlayMeta
 import com.themovieguide.data.model.meta.ReviewMeta
+import com.themovieguide.data.model.meta.television.DiscoveryMeta
 import com.themovieguide.data.model.meta.television.RatedMeta
 import com.themovieguide.data.model.meta.television.SearchMeta
 import com.themovieguide.data.model.meta.television.TodayAirMeta
@@ -149,4 +150,11 @@ interface ApiServices {
         @Query("language") language: String = "en-US",
         @Query("page") pageNumber: Int = 1,
     ): TodayAirMeta
+
+    @GET("/3/discover/tv")
+    suspend fun getDiscoverTelevision(
+        @Query("api_key") apiKey: String,
+        @Query("sort_by") sortBy: String = "popularity.desc",
+        @Query("with_companies") withCompanies: Int = 1957,
+    ): DiscoveryMeta
 }

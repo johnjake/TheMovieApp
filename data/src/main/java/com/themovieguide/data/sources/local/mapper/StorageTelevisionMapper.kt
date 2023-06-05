@@ -1,5 +1,6 @@
 package com.themovieguide.data.sources.local.mapper
 
+import com.themovieguide.data.sources.local.model.DiscoverDB
 import com.themovieguide.data.sources.local.model.RatedTvDB
 import com.themovieguide.data.sources.local.model.SearchTvDB
 import com.themovieguide.data.sources.local.model.TodayAirDB
@@ -46,6 +47,24 @@ fun LiveVision.castToTelevisionSearchDB(): SearchTvDB {
 
 fun LiveVision.castToTodayAirDB(): TodayAirDB {
     return TodayAirDB(
+        backdropPath = this.backdropPath,
+        firstAirDate = this.firstAirDate,
+        genreIds = this.genreIds.castToJson(),
+        id = this.id,
+        name = this.name,
+        originCountry = this.originCountry.castToJson(),
+        originalLanguage = this.originalLanguage,
+        originalName = this.originalName,
+        overview = this.overview,
+        popularity = this.popularity,
+        posterPath = this.posterPath,
+        voteAverage = this.voteAverage,
+        voteCount = this.voteCount,
+    )
+}
+
+fun LiveVision.castDiscoverDB(): DiscoverDB {
+    return DiscoverDB(
         backdropPath = this.backdropPath,
         firstAirDate = this.firstAirDate,
         genreIds = this.genreIds.castToJson(),

@@ -2,6 +2,7 @@ package com.themovieguide.data.module
 import com.themovieguide.data.features.cast.CastImpl
 import com.themovieguide.data.features.details.DetailsMovieRepository
 import com.themovieguide.data.features.details.MovieDetailsImpl
+import com.themovieguide.data.features.discover.DiscoverTvImpl
 import com.themovieguide.data.features.ratedtv.RatedTvImpl
 import com.themovieguide.data.features.search.SearchImpl
 import com.themovieguide.data.features.searchtv.SearchTelevisionImpl
@@ -12,6 +13,7 @@ import com.themovieguide.data.features.toprated.TopRatedImpl
 import com.themovieguide.data.features.upcoming.UpcomingImpl
 import com.themovieguide.data.repository.cast.MovieCastCase
 import com.themovieguide.data.repository.details.MovieDetailsCase
+import com.themovieguide.data.repository.discovertv.DiscoverTvShowCase
 import com.themovieguide.data.repository.ratedtv.RatedTvShowCase
 import com.themovieguide.data.repository.search.SearchCase
 import com.themovieguide.data.repository.searchtv.SearchTelevisionCase
@@ -20,6 +22,7 @@ import com.themovieguide.data.repository.todayair.TodayAirStorageCase
 import com.themovieguide.data.repository.toprated.TopRatedCase
 import com.themovieguide.data.repository.upcoming.UpcomingCase
 import com.themovieguide.data.sources.local.database.AppDatabase
+import com.themovieguide.data.sources.local.repository.discover.DiscoverDBRepository
 import com.themovieguide.data.sources.local.repository.ratedtv.RatedTelevisionDBRepository
 import com.themovieguide.data.sources.local.repository.search.SearchDBRepository
 import com.themovieguide.data.sources.local.repository.searchtv.SearchTvStorageRepository
@@ -33,6 +36,8 @@ import com.themovieguide.domain.features.cast.CastRepository
 import com.themovieguide.domain.features.cast.MovieCast
 import com.themovieguide.domain.features.details.Details
 import com.themovieguide.domain.features.details.DetailsRepository
+import com.themovieguide.domain.features.discover.DiscoverTv
+import com.themovieguide.domain.features.discover.DiscoverTvRepository
 import com.themovieguide.domain.features.ratedtv.RatedTv
 import com.themovieguide.domain.features.ratedtv.RatedTvRepository
 import com.themovieguide.domain.features.search.Search
@@ -162,6 +167,26 @@ object ServiceModule {
         storage: TodayAirDBRepository,
     ): TodayAirStorageRepository = TodayAirStorageCase(
         repository = repository,
+        storage = storage,
+    )
+
+    @Provides
+    fun providesDiscoverTelevision(
+        api: ApiServices,
+        storage: DiscoverDBRepository,
+        signal: Connectivity,
+    ): DiscoverTv = DiscoverTvImpl(
+        api = api,
+        storage = storage,
+        signal = signal,
+    )
+
+    @Provides
+    fun provideDiscoverTvRepository(
+        television: DiscoverTv,
+        storage: DiscoverDBRepository
+    ) : DiscoverTvRepository = DiscoverTvShowCase(
+        television = television,
         storage = storage
     )
 }

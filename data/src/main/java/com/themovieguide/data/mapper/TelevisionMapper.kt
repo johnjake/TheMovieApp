@@ -1,6 +1,7 @@
 package com.themovieguide.data.mapper
 
 import com.themovieguide.data.model.dto.television.rated.Television
+import com.themovieguide.data.sources.local.model.DiscoverDB
 import com.themovieguide.data.sources.local.model.RatedTvDB
 import com.themovieguide.data.sources.local.model.SearchTvDB
 import com.themovieguide.data.sources.local.model.TodayAirDB
@@ -83,6 +84,30 @@ fun Flow<List<SearchTvDB>>.toTvSearchFlowLists(): Flow<List<LiveVision>> {
 }
 
 fun Flow<List<TodayAirDB>>.toTodayAirFlowLists(): Flow<List<LiveVision>> {
+    return this.map { list ->
+        list.map { db ->
+            val genres = if (db.genreIds?.isNotEmpty() == true) db.genreIds.castToList<Int>() else emptyList()
+            val orgCountry = if (db.originCountry?.isNotEmpty() == true) db.originCountry.castToList<String>() else emptyList()
+            LiveVision(
+                backdropPath = db.backdropPath,
+                firstAirDate = db.firstAirDate,
+                genreIds = genres,
+                id = db.id,
+                name = db.name,
+                originCountry = orgCountry,
+                originalLanguage = db.originalLanguage,
+                originalName = db.originalName,
+                overview = db.overview,
+                popularity = db.popularity,
+                posterPath = db.posterPath,
+                voteAverage = db.voteAverage,
+                voteCount = db.voteCount,
+            )
+        }
+    }
+}
+
+fun Flow<List<DiscoverDB>>.toDiscoverFlowLists(): Flow<List<LiveVision>> {
     return this.map { list ->
         list.map { db ->
             val genres = if (db.genreIds?.isNotEmpty() == true) db.genreIds.castToList<Int>() else emptyList()

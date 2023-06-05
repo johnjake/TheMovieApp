@@ -1,6 +1,7 @@
 package com.themovieguide.data.sources.local.module
 
 import android.content.Context
+import com.themovieguide.data.sources.local.dao.DiscoverDao
 import com.themovieguide.data.sources.local.dao.MovieDao
 import com.themovieguide.data.sources.local.dao.RatedTvDao
 import com.themovieguide.data.sources.local.dao.SearchDao
@@ -48,4 +49,7 @@ class DaoModule {
 
     @Provides
     fun provideTodayAirDao(db: AppDatabase): TodayAirDao = db.todayAirDao()
+
+    @Provides
+    fun provideDiscoverDao(db: AppDatabase): DiscoverDao = db.discoverDao()
 }
