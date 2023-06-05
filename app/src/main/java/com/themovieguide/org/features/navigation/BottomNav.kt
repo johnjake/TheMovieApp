@@ -213,6 +213,7 @@ private fun LaunchedTelevision(
         ratedState = ratedState.value,
         todayState = todayState.value,
         searchModel = searchModel,
+        navController = navController
     )
 }
 
