@@ -9,6 +9,7 @@ import com.themovieguide.data.model.meta.PlayMeta
 import com.themovieguide.data.model.meta.ReviewMeta
 import com.themovieguide.data.model.meta.television.RatedMeta
 import com.themovieguide.data.model.meta.television.SearchMeta
+import com.themovieguide.data.model.meta.television.TodayAirMeta
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -141,4 +142,11 @@ interface ApiServices {
         @Query("language") language: String = "en-US",
         @Query("page") pageNumber: Int = 1,
     ): SearchMeta
+
+    @GET("/3/tv/airing_today")
+    suspend fun getTodayTelevision(
+        @Query("api_key") apiKey: String,
+        @Query("language") language: String = "en-US",
+        @Query("page") pageNumber: Int = 1,
+    ): TodayAirMeta
 }

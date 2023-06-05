@@ -47,6 +47,7 @@ import com.themovieguide.org.features.ratedtv.RatedTelevisionViewModel
 import com.themovieguide.org.features.search.SearchViewModel
 import com.themovieguide.org.features.searchtv.SearchTelevisionViewModel
 import com.themovieguide.org.features.television.TelevisionScreen
+import com.themovieguide.org.features.todayair.TodayAirViewModel
 import com.themovieguide.org.features.upcoming.UpcomingViewModel
 import com.themovieguide.org.ui.theme.Gray800
 import com.themovieguide.org.ui.theme.PinkColor700
@@ -197,15 +198,22 @@ private fun LaunchedTelevision(
     /** instance a viewmodel **/
     val ratedModel = hiltViewModel<RatedTelevisionViewModel>(tvEntry)
     val searchModel = hiltViewModel<SearchTelevisionViewModel>(tvEntry)
+    val todayModel = hiltViewModel<TodayAirViewModel>(tvEntry)
 
     /** fetch data from room **/
     ratedModel.fetchTopRated()
+    todayModel.fetchTodayAir()
 
     /** observe data and get the data state **/
     val ratedState = ratedModel.ratedShared.collectAsStateWithLifecycle(initialValue = null)
+    val todayState = todayModel.airShared.collectAsStateWithLifecycle(initialValue = null)
 
     /** passing state or view model depends on the use case **/
-    TelevisionScreen(ratedState = ratedState.value, searchModel = searchModel)
+    TelevisionScreen(
+        ratedState = ratedState.value,
+        todayState = todayState.value,
+        searchModel = searchModel,
+    )
 }
 
 @Composable

@@ -15,6 +15,7 @@ import timber.log.Timber
 @Composable
 fun TelevisionScreen(
     ratedState: StateLiveTelevision<List<LiveVision>>?,
+    todayState: StateLiveTelevision<List<LiveVision>>?,
     searchModel: SearchTelevisionViewModel,
 ) {
     Box(
@@ -37,15 +38,25 @@ fun TelevisionScreen(
             }
             else -> Timber.e("RatedTelevision: No initial data")
         }
+
+        when (todayState) {
+            is StateLiveTelevision.ShowLoader -> { }
+            is StateLiveTelevision.HideLoader -> { }
+            is StateLiveTelevision.OnFailure -> Timber.e("RatedTelevision Error: ${todayState.error}")
+            is StateLiveTelevision.OnSuccess -> {
+                todayState.data.forEach {
+                    Timber.e("@@@@@@@@@@@@@@@ ${it.name}")
+                }
+            }
+            else -> Timber.e("TodayAirShow: No initial data")
+        }
+
         val searchState = searchModel.searchShared.collectAsStateWithLifecycle(initialValue = null)
         when (val searchValue = searchState.value) {
             is StateLiveTelevision.ShowLoader -> { }
             is StateLiveTelevision.HideLoader -> { }
             is StateLiveTelevision.OnFailure -> Timber.e("SearchTelevision Error: ${searchValue.error}")
             is StateLiveTelevision.OnSuccess -> {
-                searchValue.data.forEach {
-                    Timber.e("@@@@@@@@@@@@@@@ ${it.name}")
-                }
             }
             else -> Timber.e("SearchTelevision: No initial data")
         }

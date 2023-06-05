@@ -9,6 +9,8 @@ import com.themovieguide.data.sources.local.repository.searchtv.SearchTvStorageI
 import com.themovieguide.data.sources.local.repository.searchtv.SearchTvStorageRepository
 import com.themovieguide.data.sources.local.repository.theater.InTheaterDBRepository
 import com.themovieguide.data.sources.local.repository.theater.TheaterDBImpl
+import com.themovieguide.data.sources.local.repository.todaytv.TodayAirDBImpl
+import com.themovieguide.data.sources.local.repository.todaytv.TodayAirDBRepository
 import com.themovieguide.data.sources.local.repository.toprated.TopRatedDBImpl
 import com.themovieguide.data.sources.local.repository.toprated.TopRatedDBRepository
 import com.themovieguide.data.sources.local.repository.upcoming.UpcomingDBImpl
@@ -43,4 +45,7 @@ class StorageModule {
 
     @Provides
     fun provideStorageSearchTelevisionRepository(storage: AppDatabase): SearchTvStorageRepository = SearchTvStorageImpl(app = storage)
+
+    @Provides
+    fun provideStorageTodayAir(storage: AppDatabase): TodayAirDBRepository = TodayAirDBImpl(app = storage)
 }
