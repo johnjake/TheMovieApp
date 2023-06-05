@@ -4,21 +4,27 @@ import com.themovieguide.data.features.details.DetailsMovieRepository
 import com.themovieguide.data.features.details.MovieDetailsImpl
 import com.themovieguide.data.features.ratedtv.RatedTvImpl
 import com.themovieguide.data.features.search.SearchImpl
+import com.themovieguide.data.features.searchtv.SearchTelevisionImpl
 import com.themovieguide.data.features.showing.ShowingImpl
 import com.themovieguide.data.features.theater.TheaterImpl
+import com.themovieguide.data.features.todayair.TodayAirStorageImpl
 import com.themovieguide.data.features.toprated.TopRatedImpl
 import com.themovieguide.data.features.upcoming.UpcomingImpl
 import com.themovieguide.data.repository.cast.MovieCastCase
 import com.themovieguide.data.repository.details.MovieDetailsCase
 import com.themovieguide.data.repository.ratedtv.RatedTvShowCase
 import com.themovieguide.data.repository.search.SearchCase
+import com.themovieguide.data.repository.searchtv.SearchTelevisionCase
 import com.themovieguide.data.repository.showing.ShowingCase
+import com.themovieguide.data.repository.todayair.TodayAirStorageCase
 import com.themovieguide.data.repository.toprated.TopRatedCase
 import com.themovieguide.data.repository.upcoming.UpcomingCase
 import com.themovieguide.data.sources.local.database.AppDatabase
 import com.themovieguide.data.sources.local.repository.ratedtv.RatedTelevisionDBRepository
 import com.themovieguide.data.sources.local.repository.search.SearchDBRepository
+import com.themovieguide.data.sources.local.repository.searchtv.SearchTvStorageRepository
 import com.themovieguide.data.sources.local.repository.theater.InTheaterDBRepository
+import com.themovieguide.data.sources.local.repository.todaytv.TodayAirDBRepository
 import com.themovieguide.data.sources.local.repository.toprated.TopRatedDBRepository
 import com.themovieguide.data.sources.local.repository.upcoming.UpcomingDBRepository
 import com.themovieguide.data.sources.remote.ApiServices
@@ -31,10 +37,14 @@ import com.themovieguide.domain.features.ratedtv.RatedTv
 import com.themovieguide.domain.features.ratedtv.RatedTvRepository
 import com.themovieguide.domain.features.search.Search
 import com.themovieguide.domain.features.search.SearchRepository
+import com.themovieguide.domain.features.searchtv.SearchTelevision
+import com.themovieguide.domain.features.searchtv.SearchTelevisionRepository
 import com.themovieguide.domain.features.showing.LocalRepository
 import com.themovieguide.domain.features.showing.Showing
 import com.themovieguide.domain.features.showing.ShowingRepository
 import com.themovieguide.domain.features.theater.Theater
+import com.themovieguide.domain.features.todayair.TodayAirStorage
+import com.themovieguide.domain.features.todayair.TodayAirStorageRepository
 import com.themovieguide.domain.features.toprated.TopRated
 import com.themovieguide.domain.features.toprated.TopRatedRepository
 import com.themovieguide.domain.features.upcoming.Upcoming
@@ -113,5 +123,45 @@ object ServiceModule {
     ): RatedTvRepository = RatedTvShowCase(
         television = television,
         storage = storage,
+    )
+
+    @Provides
+    fun provideTvStorageSearch(
+        remote: ApiServices,
+        storage: SearchTvStorageRepository,
+        signal: Connectivity,
+    ): SearchTelevision = SearchTelevisionImpl(
+        api = remote,
+        storage = storage,
+        signal = signal,
+    )
+
+    @Provides
+    fun provideSearchTvRepository(
+        repository: SearchTelevision,
+        storage: SearchTvStorageRepository,
+    ): SearchTelevisionRepository = SearchTelevisionCase(
+        repository = repository,
+        storage = storage,
+    )
+
+    @Provides
+    fun provideTodayAirStorage(
+        api: ApiServices,
+        storage: TodayAirDBRepository,
+        signal: Connectivity,
+    ): TodayAirStorage = TodayAirStorageImpl(
+        api = api,
+        storage = storage,
+        signal = signal,
+    )
+
+    @Provides
+    fun providesTodayAirRepository(
+        repository: TodayAirStorage,
+        storage: TodayAirDBRepository,
+    ): TodayAirStorageRepository = TodayAirStorageCase(
+        repository = repository,
+        storage = storage
     )
 }

@@ -5,8 +5,12 @@ import com.themovieguide.data.sources.local.repository.ratedtv.RatedTelevisionDB
 import com.themovieguide.data.sources.local.repository.ratedtv.RatedTelevisionDBRepository
 import com.themovieguide.data.sources.local.repository.search.SearchDBImpl
 import com.themovieguide.data.sources.local.repository.search.SearchDBRepository
+import com.themovieguide.data.sources.local.repository.searchtv.SearchTvStorageImpl
+import com.themovieguide.data.sources.local.repository.searchtv.SearchTvStorageRepository
 import com.themovieguide.data.sources.local.repository.theater.InTheaterDBRepository
 import com.themovieguide.data.sources.local.repository.theater.TheaterDBImpl
+import com.themovieguide.data.sources.local.repository.todaytv.TodayAirDBImpl
+import com.themovieguide.data.sources.local.repository.todaytv.TodayAirDBRepository
 import com.themovieguide.data.sources.local.repository.toprated.TopRatedDBImpl
 import com.themovieguide.data.sources.local.repository.toprated.TopRatedDBRepository
 import com.themovieguide.data.sources.local.repository.upcoming.UpcomingDBImpl
@@ -38,4 +42,10 @@ class StorageModule {
 
     @Provides
     fun provideStorageRatedTelevisionRepository(storage: AppDatabase): RatedTelevisionDBRepository = RatedTelevisionDBImpl(app = storage)
+
+    @Provides
+    fun provideStorageSearchTelevisionRepository(storage: AppDatabase): SearchTvStorageRepository = SearchTvStorageImpl(app = storage)
+
+    @Provides
+    fun provideStorageTodayAir(storage: AppDatabase): TodayAirDBRepository = TodayAirDBImpl(app = storage)
 }
