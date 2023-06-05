@@ -45,6 +45,7 @@ import com.themovieguide.org.features.home.ShowingViewModel
 import com.themovieguide.org.features.rated.TopRatedViewModel
 import com.themovieguide.org.features.ratedtv.RatedTelevisionViewModel
 import com.themovieguide.org.features.search.SearchViewModel
+import com.themovieguide.org.features.searchtv.SearchTelevisionViewModel
 import com.themovieguide.org.features.television.TelevisionScreen
 import com.themovieguide.org.features.upcoming.UpcomingViewModel
 import com.themovieguide.org.ui.theme.Gray800
@@ -195,6 +196,7 @@ private fun LaunchedTelevision(
 
     /** instance a viewmodel **/
     val ratedModel = hiltViewModel<RatedTelevisionViewModel>(tvEntry)
+    val searchModel = hiltViewModel<SearchTelevisionViewModel>(tvEntry)
 
     /** fetch data from room **/
     ratedModel.fetchTopRated()
@@ -203,7 +205,7 @@ private fun LaunchedTelevision(
     val ratedState = ratedModel.ratedShared.collectAsStateWithLifecycle(initialValue = null)
 
     /** passing state or view model depends on the use case **/
-    TelevisionScreen(ratedState = ratedState.value)
+    TelevisionScreen(ratedState = ratedState.value, searchModel = searchModel)
 }
 
 @Composable

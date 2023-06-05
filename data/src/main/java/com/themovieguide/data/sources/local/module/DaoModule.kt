@@ -4,6 +4,7 @@ import android.content.Context
 import com.themovieguide.data.sources.local.dao.MovieDao
 import com.themovieguide.data.sources.local.dao.RatedTvDao
 import com.themovieguide.data.sources.local.dao.SearchDao
+import com.themovieguide.data.sources.local.dao.SearchTvDao
 import com.themovieguide.data.sources.local.dao.TheaterDao
 import com.themovieguide.data.sources.local.dao.TopRatedDao
 import com.themovieguide.data.sources.local.dao.UpcomingDao
@@ -40,4 +41,7 @@ class DaoModule {
 
     @Provides
     fun provideRatedTvDao(db: AppDatabase): RatedTvDao = db.ratedTvDao()
+
+    @Provides
+    fun provideSearchTvDao(db: AppDatabase): SearchTvDao = db.searchTvDao()
 }
