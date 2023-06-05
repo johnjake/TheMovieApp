@@ -5,6 +5,7 @@ import com.themovieguide.data.mapper.toMovieEntity
 import com.themovieguide.data.sources.remote.ApiServices
 import com.themovieguide.domain.features.details.Details
 import com.themovieguide.domain.states.showing.StateSingleMeta
+import kotlinx.coroutines.delay
 import javax.inject.Inject
 
 class MovieDetailsImpl @Inject constructor(private val api: ApiServices) : Details {
@@ -18,6 +19,7 @@ class MovieDetailsImpl @Inject constructor(private val api: ApiServices) : Detai
                 moviePath = movieId,
             )
             val data = response.toMovieEntity()
+            delay(100)
             StateSingleMeta.OnSuccess(data = data)
         } catch (ex: Exception) {
             StateSingleMeta.OnFailed(error = ex.message)

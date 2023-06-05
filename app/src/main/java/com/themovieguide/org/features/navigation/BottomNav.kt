@@ -43,6 +43,7 @@ import com.themovieguide.org.features.discover.DiscoverScreen
 import com.themovieguide.org.features.home.HomeCinema
 import com.themovieguide.org.features.home.ShowingViewModel
 import com.themovieguide.org.features.rated.TopRatedViewModel
+import com.themovieguide.org.features.ratedtv.RatedTelevisionViewModel
 import com.themovieguide.org.features.search.SearchViewModel
 import com.themovieguide.org.features.television.TelevisionScreen
 import com.themovieguide.org.features.upcoming.UpcomingViewModel
@@ -188,10 +189,21 @@ private fun LaunchedTelevision(
     backStackEntry: NavBackStackEntry,
     navController: NavHostController,
 ) {
-    val movieEntry = remember(backStackEntry) {
+    val tvEntry = remember(backStackEntry) {
         navController.getBackStackEntry(mainScreen.route)
     }
-    TelevisionScreen()
+
+    /** instance a viewmodel **/
+    val ratedModel = hiltViewModel<RatedTelevisionViewModel>(tvEntry)
+
+    /** fetch data from room **/
+    ratedModel.fetchTopRated()
+
+    /** observe data and get the data state **/
+    val ratedState = ratedModel.ratedShared.collectAsStateWithLifecycle(initialValue = null)
+
+    /** passing state or view model depends on the use case **/
+    TelevisionScreen(ratedState = ratedState.value)
 }
 
 @Composable

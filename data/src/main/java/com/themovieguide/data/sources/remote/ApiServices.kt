@@ -7,6 +7,7 @@ import com.themovieguide.data.model.meta.DiscoverMeta
 import com.themovieguide.data.model.meta.MovieMeta
 import com.themovieguide.data.model.meta.PlayMeta
 import com.themovieguide.data.model.meta.ReviewMeta
+import com.themovieguide.data.model.meta.television.RatedMeta
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -122,4 +123,11 @@ interface ApiServices {
         @Query("include_adult") adult: Boolean = true,
         @Query("region") region: String = "US",
     ): MovieMeta
+
+    @GET("/3/tv/top_rated")
+    suspend fun getTopRatedTvSeries(
+        @Query("api_key") apiKey: String,
+        @Query("language") language: String = "en-US",
+        @Query("page") pageNumber: Int = 1,
+    ): RatedMeta
 }

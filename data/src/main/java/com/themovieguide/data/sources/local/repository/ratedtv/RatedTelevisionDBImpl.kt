@@ -31,7 +31,7 @@ class RatedTelevisionDBImpl @Inject constructor(
         )
     }
 
-    override fun getTelevision(title: String): Flow<List<RatedTvDB>> {
+    override fun getTelevision(): Flow<List<RatedTvDB>> {
         return app.ratedTvDao().getTelevision()
     }
 

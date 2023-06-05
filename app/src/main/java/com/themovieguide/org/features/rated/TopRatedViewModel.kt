@@ -20,7 +20,7 @@ class TopRatedViewModel @Inject constructor(private val repository: TopRatedRepo
 
     fun fetchTopRated(page: Int) {
         viewModelScope.launch {
-            when(val response = repository.fetchTopRated(page = page)) {
+            when (val response = repository.fetchTopRated(page = page)) {
                 is StateShowing.ShowLoader -> showFlow.emit(StateMovie.ShowLoader)
                 is StateShowing.HideLoader -> showFlow.emit(StateMovie.HideLoader)
                 is StateShowing.OnSuccess -> {

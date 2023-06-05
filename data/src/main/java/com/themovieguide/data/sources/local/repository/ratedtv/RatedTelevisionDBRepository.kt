@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 interface RatedTelevisionDBRepository {
     fun insert(tv: RatedTvDB)
     fun insertTelevision(tv: RatedTvDB)
-    fun getTelevision(title: String): Flow<List<RatedTvDB>>
+    fun getTelevision(): Flow<List<RatedTvDB>>
     fun getTelevisionByTitle(): Flow<List<RatedTvDB>>
     suspend fun getTelevisionById(tvId: Int): RatedTvDB
     suspend fun deleteTelevision(tvId: Int)
