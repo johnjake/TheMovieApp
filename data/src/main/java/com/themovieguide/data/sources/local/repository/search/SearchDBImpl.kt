@@ -33,8 +33,8 @@ class SearchDBImpl @Inject constructor(
         )
     }
 
-    override fun getMovies(): Flow<List<SearchDB>> {
-        return app.searchDao().getMovies()
+    override fun getMovies(title: String): Flow<List<SearchDB>> {
+        return app.searchDao().getMovies(title)
     }
 
     override fun getMoviesByTitle(): Flow<List<SearchDB>> {

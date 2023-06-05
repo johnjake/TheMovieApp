@@ -53,8 +53,8 @@ abstract class SearchDao {
     @Query("select * from search where id = :movieId")
     abstract suspend fun getMovieById(movieId: Int): SearchDB
 
-    @Query("select * from search group by dbId")
-    abstract fun getMovies(): Flow<List<SearchDB>>
+    @Query("select * from search WHERE title LIKE :title || '%'")
+    abstract fun getMovies(title: String): Flow<List<SearchDB>>
 
     @Query("select * from search group by title")
     abstract fun getMoviesByTitle(): Flow<List<SearchDB>>

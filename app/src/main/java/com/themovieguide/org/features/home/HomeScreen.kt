@@ -46,38 +46,31 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.themovieguide.domain.model.Movies
 import com.themovieguide.domain.utils.EMPTY
 import com.themovieguide.org.R
-import com.themovieguide.org.features.mapper.toMovieList
 import com.themovieguide.org.features.navigation.NavigationScreen
 import com.themovieguide.org.features.rated.TopRatedViewModel
 import com.themovieguide.org.features.search.SearchViewModel
 import com.themovieguide.org.features.state.StateMovie
 import com.themovieguide.org.features.upcoming.UpcomingViewModel
-import com.themovieguide.org.features.utils.MovieSelection
 import com.themovieguide.org.features.utils.boxIndicator
 import com.themovieguide.org.features.utils.default_image
 import com.themovieguide.org.features.utils.imageUrl
-import com.themovieguide.org.features.utils.readJsonFromAssets
 import com.themovieguide.org.features.utils.toSearchField
 import com.themovieguide.org.ui.theme.Default800
 import com.themovieguide.org.ui.theme.LightDark220
@@ -105,7 +98,6 @@ import com.themovieguide.org.ui.theme.text.MovieItemTitle
 import com.themovieguide.org.ui.theme.text.MovieRating
 import com.themovieguide.org.ui.theme.text.MovieTitle
 import com.themovieguide.org.ui.theme.text.ResultText
-import com.themovieguide.org.ui.theme.text.TextEnableSelection
 import com.themovieguide.org.ui.theme.text.TextSelection
 import com.themovieguide.org.ui.theme.text.TheaterEnableSelection
 import kotlinx.coroutines.delay
@@ -136,6 +128,7 @@ fun HomeCinema(
         Content(viewModel, upModel, topModel, searchModel, navController)
     }
 }
+val comeList: MutableList<Movies> = arrayListOf()
 
 @Composable
 fun Content(
@@ -150,9 +143,7 @@ fun Content(
     val isSearch = remember { mutableStateOf(false) }
     val homeValue = model.value
     val upcomingValue = upComingModel.value
-    val mainList: MutableList<Movies> = arrayListOf()
     val showList: MutableList<Movies> = arrayListOf()
-    val comeList: MutableList<Movies> = arrayListOf()
 
     /** observe theater and top rated **/
     val onClickTop = remember { mutableStateOf(false) }
@@ -178,11 +169,9 @@ fun Content(
         navController,
         searchModel,
         isSearch,
-        mainList,
         showList,
         comeList,
         topModel,
-        viewModel,
         onClickTop,
     )
 }
@@ -193,11 +182,9 @@ private fun homeUI(
     navController: NavHostController,
     searchModel: SearchViewModel,
     isSearch: MutableState<Boolean>,
-    mainList: MutableList<Movies>,
     showList: MutableList<Movies>,
     comeList: MutableList<Movies>,
     topModel: TopRatedViewModel,
-    viewModel: ShowingViewModel,
     onClickTop: MutableState<Boolean>,
 ) {
     val state = rememberPagerState()
@@ -233,34 +220,28 @@ private fun homeUI(
                 }
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
-                mainList.clear()
-                mainList.addAll(
-                    stateList(
-                        todayList = showList,
-                        comingList = comeList,
-                        selectionSlide,
-                    ),
-                )
                 /** header today's & upcoming movie **/
                 TextSelection(selectionSlide)
             }
-
             Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                val showing = remember { mutableStateOf(emptyList<Movies>()) }
+                showing.value = showList.take(8)
                 /** Loader Row **/
                 Row {
                     LoadSlider(
                         navController = navController,
                         state = state,
-                        dataList = if (!selectionSlide.value) mainList.take(5) else mainList.take(10),
+                        selected = selectionSlide,
+                        showing = showing,
                     )
                 }
                 /** Dot Indicator Row **/
                 Row(modifier = modifierRowIndicator) {
                     DotsIndicator(
                         totalDots = if (!selectionSlide.value) {
-                            mainList.take(5).size
+                            showList.take(8).size
                         } else {
-                            mainList.take(
+                            comeList.take(
                                 8,
                             ).size
                         },
@@ -297,7 +278,7 @@ private fun homeUI(
                     if (onClickTop.value) {
                         TheaterShow(
                             navController = navController,
-                            mainList = mainList,
+                            showList = showList,
                             topViewModel = topModel,
                             movieList = comeList,
                             onClickTop,
@@ -305,7 +286,7 @@ private fun homeUI(
                     } else {
                         TheaterShow(
                             navController = navController,
-                            mainList = mainList,
+                            showList = showList,
                             topViewModel = topModel,
                             movieList = comeList,
                             onClickTop,
@@ -315,6 +296,10 @@ private fun homeUI(
             }
         }
     }
+}
+
+fun convertToMutableState(movieList: List<Movies>): MutableState<List<Movies>> {
+    return mutableStateOf(movieList)
 }
 
 @Composable
@@ -410,41 +395,97 @@ fun SearchResult(navController: NavHostController, list: List<Movies>) {
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun LoadSlider(navController: NavHostController, state: PagerState, dataList: List<Movies>) {
-    HorizontalPager(pageCount = dataList.size, state = state) { scope ->
-        val averageVote = dataList[scope].voteCount ?: 0
-        val aveStar = averageVote / 100
-        Row {
-            Box(modifier = modifierTitleBox) {
-                Column(modifier = Modifier.padding(top = 16.dp, start = 5.dp)) {
-                    Card(modifier = modifierCardView) {
-                        val poster = dataList[scope].posterPath ?: default_image
-                        val url = poster.imageUrl()
-                        val description = dataList[scope].posterPath ?: EMPTY
-                        val movieId = dataList[scope].id ?: 0
-                        AsyncImageLoad(
-                            url = url,
-                            description = description,
-                            onClick = {
-                                clickMovie(
-                                    movieId = movieId,
-                                    navController = navController,
-                                )
-                            },
-                        )
+fun LoadSlider(navController: NavHostController, state: PagerState, selected: MutableState<Boolean>, showing: MutableState<List<Movies>>) {
+    AnimatedVisibility(visible = !selected.value) {
+        val showingList = showing.value
+        HorizontalPager(pageCount = showingList.size, state = state) { scope ->
+            val averageVote = showingList[scope].voteCount ?: 0
+            val aveStar = averageVote / 100
+            Row {
+                Box(modifier = modifierTitleBox) {
+                    Column(modifier = Modifier.padding(top = 16.dp, start = 5.dp)) {
+                        Card(modifier = modifierCardView) {
+                            val poster = showingList[scope].posterPath ?: default_image
+                            val url = poster.imageUrl()
+                            val description = showingList[scope].posterPath ?: EMPTY
+                            val movieId = showingList[scope].id ?: 0
+                            AsyncImageLoad(
+                                url = url,
+                                description = description,
+                                onClick = {
+                                    clickMovie(
+                                        movieId = movieId,
+                                        navController = navController,
+                                    )
+                                },
+                            )
+                        }
+                    }
+                    Column {
+                        /** title **/
+                        /** title **/
+                        MovieTitle(title = showingList[scope].title ?: EMPTY)
+                        /** date **/
+                        /** date **/
+                        DateRelease(date = showingList[scope].releaseDate ?: EMPTY)
+                        /** rating star **/
+                        /** rating star **/
+                        RatingStar(modifier = modifierStarTop, rating = aveStar.toFloat(), spaceBetween = 1.dp)
+                        /** rating number **/
+                        /** rating number **/
+                        MovieRating(showingList[scope].voteCount ?: 0)
+                        /** body **/
+                        /** body **/
+                        DisplayText(text = showingList[scope].overview ?: EMPTY)
                     }
                 }
-                Column {
-                    /** title **/
-                    MovieTitle(title = dataList[scope].title ?: EMPTY)
-                    /** date **/
-                    DateRelease(date = dataList[scope].releaseDate ?: EMPTY)
-                    /** rating star **/
-                    RatingStar(modifier = modifierStarTop, rating = aveStar.toFloat(), spaceBetween = 1.dp)
-                    /** rating number **/
-                    MovieRating(dataList[scope].voteCount ?: 0)
-                    /** body **/
-                    DisplayText(text = dataList[scope].overview ?: EMPTY)
+            }
+        }
+    }
+    AnimatedVisibility(visible = selected.value) {
+        val mutableList: MutableList<Movies> = arrayListOf()
+        mutableList.clear()
+        mutableList.addAll(comeList.take(8))
+        HorizontalPager(pageCount = mutableList.size, state = state) { scope ->
+            val averageVote = mutableList[scope].voteCount ?: 0
+            val aveStar = averageVote / 100
+            Row {
+                Box(modifier = modifierTitleBox) {
+                    Column(modifier = Modifier.padding(top = 16.dp, start = 5.dp)) {
+                        Card(modifier = modifierCardView) {
+                            val poster = mutableList[scope].posterPath ?: default_image
+                            val url = poster.imageUrl()
+                            val description = mutableList[scope].posterPath ?: EMPTY
+                            val movieId = mutableList[scope].id ?: 0
+                            AsyncImageLoad(
+                                url = url,
+                                description = description,
+                                onClick = {
+                                    clickMovie(
+                                        movieId = movieId,
+                                        navController = navController,
+                                    )
+                                },
+                            )
+                        }
+                    }
+                    Column {
+                        /** title **/
+                        /** title **/
+                        MovieTitle(title = mutableList[scope].title ?: EMPTY)
+                        /** date **/
+                        /** date **/
+                        DateRelease(date = mutableList[scope].releaseDate ?: EMPTY)
+                        /** rating star **/
+                        /** rating star **/
+                        RatingStar(modifier = modifierStarTop, rating = aveStar.toFloat(), spaceBetween = 1.dp)
+                        /** rating number **/
+                        /** rating number **/
+                        MovieRating(mutableList[scope].voteCount ?: 0)
+                        /** body **/
+                        /** body **/
+                        DisplayText(text = mutableList[scope].overview ?: EMPTY)
+                    }
                 }
             }
         }
@@ -480,7 +521,7 @@ fun DotsIndicator(
 @Composable
 private fun TheaterShow(
     navController: NavHostController,
-    mainList: MutableList<Movies>,
+    showList: MutableList<Movies>,
     topViewModel: TopRatedViewModel,
     movieList: MutableList<Movies>,
     theater: MutableState<Boolean>,
@@ -498,7 +539,7 @@ private fun TheaterShow(
             }
         }
         else -> {
-            HandleMapIndex(navController = navController, ratedList = mainList.toList(), commonList = movieList)
+            HandleMapIndex(navController = navController, ratedList = showList.toList(), commonList = movieList)
         }
     }
 }
@@ -568,22 +609,6 @@ fun DisplayMovieInTheater(navController: NavHostController, list: List<Movies>) 
     }
 }
 
-private fun stateList(
-    todayList: MutableList<Movies>,
-    comingList: MutableList<Movies>,
-    select: MutableState<Boolean>,
-): MutableList<Movies> {
-    val mainList: MutableList<Movies> = arrayListOf()
-    if (!select.value) {
-        mainList.clear()
-        mainList.addAll(todayList)
-    } else {
-        mainList.clear()
-        mainList.addAll(comingList)
-    }
-    return mainList
-}
-
 private val searchTextStyle = TextStyle(
     color = Color.White,
     fontSize = 18.sp,
@@ -614,147 +639,9 @@ private fun inputManager(context: Context): InputMethodManager {
     return context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
-@Composable
-fun InputMethodManager.ShowKeyBoard() {
-    val softwareKeyboardController = LocalSoftwareKeyboardController.current
-    softwareKeyboardController?.show()
-}
 private fun clickMovie(movieId: Int, navController: NavHostController) {
     navController.navigate(NavigationScreen.MainScreen.createRoute(id = movieId.toString()))
 }
-
-@Composable
-private fun fetchSelectedList(selectedState: MovieSelection, viewModel: ShowingViewModel, upcomingModel: UpcomingViewModel): List<Movies> {
-    when (selectedState) {
-        MovieSelection.TODAY_MOVIE -> return GetMovieToday(viewModel)
-        MovieSelection.UPCOMING_MOVIE -> return GetMovieUpcoming(upcomingModel)
-        MovieSelection.NONE -> return emptyList()
-    }
-}
-
-@Composable
-private fun GetMovieToday(viewModel: ShowingViewModel): List<Movies> {
-    val showList: MutableList<Movies> = arrayListOf()
-    val model = viewModel.showShared.collectAsStateWithLifecycle(initialValue = null)
-    when (val homeValue = model.value) {
-        is StateMovie.HideLoader -> {}
-        is StateMovie.ShowLoader -> {}
-        is StateMovie.OnSuccess -> showList.addAll(homeValue.data)
-        is StateMovie.OnFailure -> Timber.e(" ${homeValue.error}")
-        else -> { Timber.e("Home: no response in getNowShowing") }
-    }
-    return showList.toList()
-}
-
-@Composable
-private fun GetMovieUpcoming(viewModel: UpcomingViewModel): List<Movies> {
-    val showList: MutableList<Movies> = arrayListOf()
-    val model = viewModel.showShared.collectAsStateWithLifecycle(initialValue = null)
-    when (val homeValue = model.value) {
-        is StateMovie.HideLoader -> {}
-        is StateMovie.ShowLoader -> {}
-        is StateMovie.OnSuccess -> showList.addAll(homeValue.data)
-        is StateMovie.OnFailure -> Timber.e(" ${homeValue.error}")
-        else -> { Timber.e("Home: no response in getNowShowing") }
-    }
-    return showList.toList()
-}
-
-@OptIn(ExperimentalFoundationApi::class)
-@Preview(showSystemUi = true, showBackground = true)
-@Composable
-fun PreviewHome() {
-    val navController = rememberNavController()
-    val dataList = readJsonFromAssets(LocalContext.current, "Movie.json")
-    val list = dataList.toMovieList()
-    HomeUITest(navController = navController, mainList = list.toMutableList(), showList = list, comeList = list)
-}
-
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-private fun HomeUITest(
-    navController: NavHostController,
-    mainList: MutableList<Movies>,
-    showList: List<Movies>,
-    comeList: List<Movies>,
-) {
-    val isSearch = remember { mutableStateOf(false) }
-    val state = rememberPagerState()
-    val selectionSlide = remember { mutableStateOf(false) }
-    val theaterSlide = remember { mutableStateOf(false) }
-    Box {
-        Column {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                // SearchInputField(searchModel, isSearch)
-            }
-            /** search list **/
-            Row(verticalAlignment = Alignment.CenterVertically) {
-            }
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                val todayColor = remember { mutableStateOf(Primary800) }
-                val todayWeight = remember { mutableStateOf(FontWeight.Normal) }
-                val upComeColor = remember { mutableStateOf(Default800) }
-                val upComeWeight = remember { mutableStateOf(FontWeight.Normal) }
-                mainList.clear()
-                mainList.addAll(
-                    stateList(
-                        todayList = showList.toMutableList(),
-                        comingList = comeList.toMutableList(),
-                        selectionSlide,
-                    ),
-                )
-                /** header today's & upcoming movie **/
-                TextEnableSelection(
-                    selected = selectionSlide,
-                    enableColor = todayColor,
-                    enableWeight = todayWeight,
-                    disableColor = upComeColor,
-                    disableWeight = upComeWeight,
-                    titleEnable = "Today's Movie",
-                    disabledTitle = "Upcoming",
-                )
-            }
-
-            Column(
-                modifier = Modifier
-                    .verticalScroll(rememberScrollState()),
-            ) {
-                /** Loader Row **/
-                Row {
-                    LoadSlider(
-                        navController = navController,
-                        state = state,
-                        dataList = if (!selectionSlide.value) mainList.take(5) else mainList.take(10),
-                    )
-                }
-                /** Dot Indicator Row **/
-                Row(modifier = modifierRowIndicator) {
-                    DotsIndicator(
-                        totalDots = if (!selectionSlide.value) {
-                            mainList.take(5).size
-                        } else {
-                            mainList.take(
-                                8,
-                            ).size
-                        },
-                        selectedIndex = state.currentPage,
-                        selectedColor = PinkColor700,
-                        unSelectedColor = LightDark220,
-                    )
-                }
-                Row {
-                }
-            }
-        }
-    }
-}
-
 fun onClickMovie(movieId: Int, navController: NavHostController) {
     navController.navigate(NavigationScreen.NowShowing.createRoute(id = movieId.toString()))
 }

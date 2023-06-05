@@ -2,6 +2,7 @@ package com.themovieguide.data.sources.local.module
 
 import android.content.Context
 import com.themovieguide.data.sources.local.dao.MovieDao
+import com.themovieguide.data.sources.local.dao.RatedTvDao
 import com.themovieguide.data.sources.local.dao.SearchDao
 import com.themovieguide.data.sources.local.dao.TheaterDao
 import com.themovieguide.data.sources.local.dao.TopRatedDao
@@ -36,4 +37,7 @@ class DaoModule {
 
     @Provides
     fun provideUpcomingDao(db: AppDatabase): UpcomingDao = db.upcomingDao()
+
+    @Provides
+    fun provideRatedTvDao(db: AppDatabase): RatedTvDao = db.ratedTvDao()
 }

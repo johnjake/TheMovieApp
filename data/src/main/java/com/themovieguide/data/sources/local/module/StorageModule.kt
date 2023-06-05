@@ -1,6 +1,8 @@
 package com.themovieguide.data.sources.local.module
 
 import com.themovieguide.data.sources.local.database.AppDatabase
+import com.themovieguide.data.sources.local.repository.ratedtv.RatedTelevisionDBImpl
+import com.themovieguide.data.sources.local.repository.ratedtv.RatedTelevisionDBRepository
 import com.themovieguide.data.sources.local.repository.search.SearchDBImpl
 import com.themovieguide.data.sources.local.repository.search.SearchDBRepository
 import com.themovieguide.data.sources.local.repository.theater.InTheaterDBRepository
@@ -33,4 +35,7 @@ class StorageModule {
 
     @Provides
     fun provideStorageUpcomingRepository(storage: AppDatabase): UpcomingDBRepository = UpcomingDBImpl(app = storage)
+
+    @Provides
+    fun provideStorageRatedTelevisionRepository(storage: AppDatabase): RatedTelevisionDBRepository = RatedTelevisionDBImpl(app = storage)
 }
