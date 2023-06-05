@@ -388,6 +388,43 @@ fun TextSelection(selectionSlide: MutableState<Boolean>) {
 }
 
 @Composable
+fun TelevisionSelection(selectionSlide: MutableState<Boolean>) {
+    var selectedText by remember { mutableStateOf(MovieSelection.TODAY_MOVIE) }
+    Row(
+        modifier = Modifier.width(400.dp),
+        horizontalArrangement = Arrangement.Start,
+    ) {
+        Text(
+            text = "Today's Series",
+            textAlign = TextAlign.Justify,
+            fontStyle = FontStyle.Normal,
+            fontWeight = if (selectedText == MovieSelection.TODAY_MOVIE) FontWeight.ExtraBold else FontWeight.Normal,
+            color = if (selectedText == MovieSelection.TODAY_MOVIE) Primary800 else Default800,
+            fontSize = 17.sp,
+            lineHeight = 1.2.em,
+            modifier = modifierToday.clickable {
+                selectionSlide.value = false
+                selectedText = MovieSelection.TODAY_MOVIE
+            },
+        )
+
+        Text(
+            text = "Top Series",
+            textAlign = TextAlign.Justify,
+            fontStyle = FontStyle.Normal,
+            fontWeight = if (selectedText == MovieSelection.TODAY_MOVIE) FontWeight.Normal else FontWeight.ExtraBold,
+            color = if (selectedText == MovieSelection.TODAY_MOVIE) Default800 else Primary800,
+            fontSize = 17.sp,
+            lineHeight = 1.2.em,
+            modifier = modifierToday.clickable {
+                selectionSlide.value = true
+                selectedText = MovieSelection.UPCOMING_MOVIE
+            },
+        )
+    }
+}
+
+@Composable
 fun TextEnableSelection(
     selected: MutableState<Boolean>,
     enableColor: MutableState<Color>,

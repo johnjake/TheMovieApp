@@ -8,13 +8,18 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.Card
@@ -47,22 +52,34 @@ import androidx.navigation.NavHostController
 import com.themovieguide.domain.model.television.LiveVision
 import com.themovieguide.domain.utils.EMPTY
 import com.themovieguide.org.R
+import com.themovieguide.org.features.home.DotsIndicator
 import com.themovieguide.org.features.navigation.NavigationScreen
 import com.themovieguide.org.features.searchtv.SearchTelevisionViewModel
 import com.themovieguide.org.features.state.StateLiveTelevision
 import com.themovieguide.org.features.utils.default_image
 import com.themovieguide.org.features.utils.imageUrl
 import com.themovieguide.org.features.utils.toSearchField
+import com.themovieguide.org.ui.theme.LightDark220
 import com.themovieguide.org.ui.theme.PinkColor700
 import com.themovieguide.org.ui.theme.gradientHome
+import com.themovieguide.org.ui.theme.images.AsyncImageLoad
 import com.themovieguide.org.ui.theme.images.AsyncSearchImageLoad
+import com.themovieguide.org.ui.theme.modifier.modifierCardView
+import com.themovieguide.org.ui.theme.modifier.modifierRowIndicator
 import com.themovieguide.org.ui.theme.modifier.modifierSearch
 import com.themovieguide.org.ui.theme.modifier.modifierSearchBox
 import com.themovieguide.org.ui.theme.modifier.modifierSearchCardView
 import com.themovieguide.org.ui.theme.modifier.modifierSearchResult
+import com.themovieguide.org.ui.theme.modifier.modifierStarTop
+import com.themovieguide.org.ui.theme.modifier.modifierTitleBox
 import com.themovieguide.org.ui.theme.rating.RatingStar
+import com.themovieguide.org.ui.theme.text.DateRelease
 import com.themovieguide.org.ui.theme.text.DateReleaseSearch
+import com.themovieguide.org.ui.theme.text.DisplayText
+import com.themovieguide.org.ui.theme.text.MovieRating
+import com.themovieguide.org.ui.theme.text.MovieTitle
 import com.themovieguide.org.ui.theme.text.ResultText
+import com.themovieguide.org.ui.theme.text.TelevisionSelection
 import kotlinx.coroutines.delay
 import timber.log.Timber
 
@@ -80,15 +97,17 @@ fun TelevisionScreen(
                 gradientHome(),
             ),
     ) {
+        val mutableRated: MutableList<LiveVision> = arrayListOf()
+        val mutableToday: MutableList<LiveVision> = arrayListOf()
+
         /** extract data from state **/
         when (ratedState) {
             is StateLiveTelevision.ShowLoader -> { }
             is StateLiveTelevision.HideLoader -> { }
             is StateLiveTelevision.OnFailure -> Timber.e("RatedTelevision Error: ${ratedState.error}")
             is StateLiveTelevision.OnSuccess -> {
-                ratedState.data.forEach {
-                    // Timber.e("@@@@@@@@@@@@@@@ ${it.name}")
-                }
+                mutableRated.clear()
+                mutableRated.addAll(ratedState.data)
             }
             else -> Timber.e("RatedTelevision: No initial data")
         }
@@ -98,13 +117,17 @@ fun TelevisionScreen(
             is StateLiveTelevision.HideLoader -> { }
             is StateLiveTelevision.OnFailure -> Timber.e("RatedTelevision Error: ${todayState.error}")
             is StateLiveTelevision.OnSuccess -> {
-                todayState.data.forEach {
-                    Timber.e("@@@@@@@@@@@@@@@ ${it.name}")
-                }
+                mutableToday.clear()
+                mutableToday.addAll(todayState.data)
             }
             else -> Timber.e("TodayAirShow: No initial data")
         }
-        TelevisionUI(searchModel, navController)
+        TelevisionUI(
+            searchModel = searchModel,
+            mutableRated = mutableRated,
+            mutableToday = mutableToday,
+            navController = navController,
+        )
     }
 }
 
@@ -112,12 +135,15 @@ fun TelevisionScreen(
 @Composable
 fun TelevisionUI(
     searchModel: SearchTelevisionViewModel,
+    mutableRated: MutableList<LiveVision>,
+    mutableToday: MutableList<LiveVision>,
     navController: NavHostController,
 ) {
     val state = rememberPagerState()
     val isSearch = remember { mutableStateOf(false) }
     val selectionSlide = remember { mutableStateOf(false) }
     val theaterSlide = remember { mutableStateOf(false) }
+    val mainList: MutableList<LiveVision> = arrayListOf()
 
     Box {
         Column {
@@ -129,7 +155,6 @@ fun TelevisionUI(
             ) {
                 SearchVisionField(searchModel, isSearch)
             }
-            /** search list **/
             /** search list **/
             Row(verticalAlignment = Alignment.CenterVertically) {
                 val searchVM =
@@ -149,8 +174,91 @@ fun TelevisionUI(
                     }
                 }
             }
+            /** Header Text Pager **/
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                mainList.clear()
+                mainList.addAll(
+                    stateList(
+                        todayList = mutableToday,
+                        ratedList = mutableRated,
+                        select = selectionSlide,
+                    ),
+                )
+                /** header today's & upcoming movie **/
+                TelevisionSelection(selectionSlide)
+            }
+
+            Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                /** Loader Row **/
+                Row {
+                    LoadSlider(
+                        navController = navController,
+                        state = state,
+                        dataList = if (!selectionSlide.value) mainList.take(10) else mainList.take(10),
+                    )
+                }
+                /** Dot Indicator Row **/
+                Row(modifier = modifierRowIndicator) {
+                    DotsIndicator(
+                        totalDots = if (!selectionSlide.value) {
+                            mainList.take(10).size
+                        } else {
+                            mainList.take(
+                                10,
+                            ).size
+                        },
+                        selectedIndex = state.currentPage,
+                        selectedColor = PinkColor700,
+                        unSelectedColor = LightDark220,
+                    )
+                }
+            }
         }
     }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun LoadSlider(navController: NavHostController, state: PagerState, dataList: List<LiveVision>) {
+    HorizontalPager(pageCount = dataList.size, state = state) { scope ->
+        val averageVote = dataList[scope].voteCount ?: 0
+        val aveStar = averageVote / 100
+        Row {
+            Box(modifier = modifierTitleBox) {
+                Column(modifier = Modifier.padding(top = 16.dp, start = 5.dp)) {
+                    Card(modifier = modifierCardView) {
+                        val poster = dataList[scope].posterPath ?: default_image
+                        val url = poster.imageUrl()
+                        val description = dataList[scope].posterPath ?: EMPTY
+                        val movieId = dataList[scope].id ?: 0
+                        AsyncImageLoad(
+                            url = url,
+                            description = description,
+                            onClick = {
+                                clickMovie(
+                                    movieId = movieId,
+                                    navController = navController,
+                                )
+                            },
+                        )
+                    }
+                }
+                Column {
+                    /** title **/
+                    MovieTitle(title = dataList[scope].name ?: EMPTY)
+                    /** date **/
+                    DateRelease(date = dataList[scope].firstAirDate ?: EMPTY)
+                    /** rating star **/
+                    RatingStar(modifier = modifierStarTop, rating = aveStar.toFloat(), spaceBetween = 1.dp)
+                    /** rating number **/
+                    MovieRating(dataList[scope].voteCount ?: 0)
+                    /** body **/
+                    DisplayText(text = dataList[scope].overview ?: EMPTY)
+                }
+            }
+        }
+    }
+    Spacer(modifier = Modifier.padding(4.dp))
 }
 
 /** search UI field **/
@@ -235,18 +343,33 @@ fun SearchResult(navController: NavHostController, list: List<LiveVision>) {
                 }
                 Column {
                     /** title **/
-                    /** title **/
                     ResultText(text = tv.name ?: EMPTY)
                     /** rating star **/
-                    /** rating star **/
                     RatingStar(modifier = modifierSearchResult, rating = aveStar.toFloat(), spaceBetween = 1.dp)
-                    /** date **/
                     /** date **/
                     DateReleaseSearch(date = tv.firstAirDate ?: EMPTY)
                 }
             }
         }
     }
+}
+
+/** private entities **/
+
+private fun stateList(
+    todayList: MutableList<LiveVision>,
+    ratedList: MutableList<LiveVision>,
+    select: MutableState<Boolean>,
+): MutableList<LiveVision> {
+    val mainList: MutableList<LiveVision> = arrayListOf()
+    if (!select.value) {
+        mainList.clear()
+        mainList.addAll(todayList)
+    } else {
+        mainList.clear()
+        mainList.addAll(ratedList)
+    }
+    return mainList
 }
 
 @Composable
