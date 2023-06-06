@@ -40,6 +40,7 @@ import com.themovieguide.org.features.details.CastViewModel
 import com.themovieguide.org.features.details.MovieDetailsScreen
 import com.themovieguide.org.features.details.MovieDetailsViewModel
 import com.themovieguide.org.features.discover.DiscoverScreen
+import com.themovieguide.org.features.discovertv.DiscoverTelevisionViewModel
 import com.themovieguide.org.features.home.HomeCinema
 import com.themovieguide.org.features.home.ShowingViewModel
 import com.themovieguide.org.features.rated.TopRatedViewModel
@@ -48,6 +49,7 @@ import com.themovieguide.org.features.search.SearchViewModel
 import com.themovieguide.org.features.searchtv.SearchTelevisionViewModel
 import com.themovieguide.org.features.television.TelevisionScreen
 import com.themovieguide.org.features.todayair.TodayAirViewModel
+import com.themovieguide.org.features.trending.TrendingViewModel
 import com.themovieguide.org.features.upcoming.UpcomingViewModel
 import com.themovieguide.org.ui.theme.Gray800
 import com.themovieguide.org.ui.theme.PinkColor700
@@ -199,20 +201,28 @@ private fun LaunchedTelevision(
     val ratedModel = hiltViewModel<RatedTelevisionViewModel>(tvEntry)
     val searchModel = hiltViewModel<SearchTelevisionViewModel>(tvEntry)
     val todayModel = hiltViewModel<TodayAirViewModel>(tvEntry)
+    val discoverModel = hiltViewModel<DiscoverTelevisionViewModel>(tvEntry)
+    val trendModel = hiltViewModel<TrendingViewModel>(tvEntry)
 
     /** fetch data from room **/
     ratedModel.fetchTopRated()
     todayModel.fetchTodayAir()
+    discoverModel.fetchDiscover()
+    trendModel.fetchTrending()
 
     /** observe data and get the data state **/
     val ratedState = ratedModel.ratedShared.collectAsStateWithLifecycle(initialValue = null)
     val todayState = todayModel.airShared.collectAsStateWithLifecycle(initialValue = null)
-
+    val discoverState = discoverModel.discoverShared.collectAsStateWithLifecycle(initialValue = null)
+    val trendingState = trendModel.trendShared.collectAsStateWithLifecycle(initialValue = null)
     /** passing state or view model depends on the use case **/
     TelevisionScreen(
         ratedState = ratedState.value,
         todayState = todayState.value,
+        discoverState = discoverState.value,
+        trendingState = trendingState.value,
         searchModel = searchModel,
+        navController = navController,
     )
 }
 

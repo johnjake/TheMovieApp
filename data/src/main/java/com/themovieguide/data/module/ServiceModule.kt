@@ -2,6 +2,7 @@ package com.themovieguide.data.module
 import com.themovieguide.data.features.cast.CastImpl
 import com.themovieguide.data.features.details.DetailsMovieRepository
 import com.themovieguide.data.features.details.MovieDetailsImpl
+import com.themovieguide.data.features.discover.DiscoverTvImpl
 import com.themovieguide.data.features.ratedtv.RatedTvImpl
 import com.themovieguide.data.features.search.SearchImpl
 import com.themovieguide.data.features.searchtv.SearchTelevisionImpl
@@ -9,23 +10,28 @@ import com.themovieguide.data.features.showing.ShowingImpl
 import com.themovieguide.data.features.theater.TheaterImpl
 import com.themovieguide.data.features.todayair.TodayAirStorageImpl
 import com.themovieguide.data.features.toprated.TopRatedImpl
+import com.themovieguide.data.features.trending.TrendingImpl
 import com.themovieguide.data.features.upcoming.UpcomingImpl
 import com.themovieguide.data.repository.cast.MovieCastCase
 import com.themovieguide.data.repository.details.MovieDetailsCase
+import com.themovieguide.data.repository.discovertv.DiscoverTvShowCase
 import com.themovieguide.data.repository.ratedtv.RatedTvShowCase
 import com.themovieguide.data.repository.search.SearchCase
 import com.themovieguide.data.repository.searchtv.SearchTelevisionCase
 import com.themovieguide.data.repository.showing.ShowingCase
 import com.themovieguide.data.repository.todayair.TodayAirStorageCase
 import com.themovieguide.data.repository.toprated.TopRatedCase
+import com.themovieguide.data.repository.trending.TrendingTvShowCase
 import com.themovieguide.data.repository.upcoming.UpcomingCase
 import com.themovieguide.data.sources.local.database.AppDatabase
+import com.themovieguide.data.sources.local.repository.discover.DiscoverDBRepository
 import com.themovieguide.data.sources.local.repository.ratedtv.RatedTelevisionDBRepository
 import com.themovieguide.data.sources.local.repository.search.SearchDBRepository
 import com.themovieguide.data.sources.local.repository.searchtv.SearchTvStorageRepository
 import com.themovieguide.data.sources.local.repository.theater.InTheaterDBRepository
 import com.themovieguide.data.sources.local.repository.todaytv.TodayAirDBRepository
 import com.themovieguide.data.sources.local.repository.toprated.TopRatedDBRepository
+import com.themovieguide.data.sources.local.repository.trending.TrendingDBRepository
 import com.themovieguide.data.sources.local.repository.upcoming.UpcomingDBRepository
 import com.themovieguide.data.sources.remote.ApiServices
 import com.themovieguide.data.utils.Connectivity
@@ -33,6 +39,8 @@ import com.themovieguide.domain.features.cast.CastRepository
 import com.themovieguide.domain.features.cast.MovieCast
 import com.themovieguide.domain.features.details.Details
 import com.themovieguide.domain.features.details.DetailsRepository
+import com.themovieguide.domain.features.discover.DiscoverTv
+import com.themovieguide.domain.features.discover.DiscoverTvRepository
 import com.themovieguide.domain.features.ratedtv.RatedTv
 import com.themovieguide.domain.features.ratedtv.RatedTvRepository
 import com.themovieguide.domain.features.search.Search
@@ -47,6 +55,8 @@ import com.themovieguide.domain.features.todayair.TodayAirStorage
 import com.themovieguide.domain.features.todayair.TodayAirStorageRepository
 import com.themovieguide.domain.features.toprated.TopRated
 import com.themovieguide.domain.features.toprated.TopRatedRepository
+import com.themovieguide.domain.features.trending.TrendingTv
+import com.themovieguide.domain.features.trending.TrendingTvRepository
 import com.themovieguide.domain.features.upcoming.Upcoming
 import com.themovieguide.domain.features.upcoming.UpcomingRepository
 import dagger.Module
@@ -162,6 +172,46 @@ object ServiceModule {
         storage: TodayAirDBRepository,
     ): TodayAirStorageRepository = TodayAirStorageCase(
         repository = repository,
-        storage = storage
+        storage = storage,
+    )
+
+    @Provides
+    fun providesDiscoverTelevision(
+        api: ApiServices,
+        storage: DiscoverDBRepository,
+        signal: Connectivity,
+    ): DiscoverTv = DiscoverTvImpl(
+        api = api,
+        storage = storage,
+        signal = signal,
+    )
+
+    @Provides
+    fun provideDiscoverTvRepository(
+        television: DiscoverTv,
+        storage: DiscoverDBRepository,
+    ): DiscoverTvRepository = DiscoverTvShowCase(
+        television = television,
+        storage = storage,
+    )
+
+    @Provides
+    fun providesTrendingTelevision(
+        api: ApiServices,
+        storage: TrendingDBRepository,
+        signal: Connectivity,
+    ): TrendingTv = TrendingImpl(
+        api = api,
+        storage = storage,
+        signal = signal,
+    )
+
+    @Provides
+    fun provideTrendingTvRepository(
+        television: TrendingTv,
+        storage: TrendingDBRepository,
+    ): TrendingTvRepository = TrendingTvShowCase(
+        television = television,
+        storage = storage,
     )
 }
