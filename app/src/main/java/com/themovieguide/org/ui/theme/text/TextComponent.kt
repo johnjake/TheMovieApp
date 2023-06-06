@@ -395,7 +395,7 @@ fun TelevisionSelection(selectionSlide: MutableState<Boolean>) {
         horizontalArrangement = Arrangement.Start,
     ) {
         Text(
-            text = "Today's Series",
+            text = "Today's TV Series",
             textAlign = TextAlign.Justify,
             fontStyle = FontStyle.Normal,
             fontWeight = if (selectedText == MovieSelection.TODAY_MOVIE) FontWeight.ExtraBold else FontWeight.Normal,
@@ -409,7 +409,7 @@ fun TelevisionSelection(selectionSlide: MutableState<Boolean>) {
         )
 
         Text(
-            text = "Top Series",
+            text = "Top TV Series",
             textAlign = TextAlign.Justify,
             fontStyle = FontStyle.Normal,
             fontWeight = if (selectedText == MovieSelection.TODAY_MOVIE) FontWeight.Normal else FontWeight.ExtraBold,

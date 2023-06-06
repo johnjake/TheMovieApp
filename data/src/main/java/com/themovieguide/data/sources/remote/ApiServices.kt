@@ -7,6 +7,7 @@ import com.themovieguide.data.model.meta.DiscoverMeta
 import com.themovieguide.data.model.meta.MovieMeta
 import com.themovieguide.data.model.meta.PlayMeta
 import com.themovieguide.data.model.meta.ReviewMeta
+import com.themovieguide.data.model.meta.television.DetailsTelevisionMeta
 import com.themovieguide.data.model.meta.television.DiscoveryMeta
 import com.themovieguide.data.model.meta.television.RatedMeta
 import com.themovieguide.data.model.meta.television.SearchMeta
@@ -164,4 +165,10 @@ interface ApiServices {
         @Query("api_key") apiKey: String,
         @Query("language") language: String = "en-US",
     ): TrendingMeta
+
+    @GET("/3/tv/{series_id}")
+    suspend fun getDetailsTelevision(
+        @Path("series_id") seriesId: Int,
+        @Query("api_key") apiKey: String,
+    ): DetailsTelevisionMeta
 }

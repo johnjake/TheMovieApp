@@ -39,6 +39,8 @@ import com.themovieguide.org.R
 import com.themovieguide.org.features.details.CastViewModel
 import com.themovieguide.org.features.details.MovieDetailsScreen
 import com.themovieguide.org.features.details.MovieDetailsViewModel
+import com.themovieguide.org.features.details.TelevisionDetailsScreen
+import com.themovieguide.org.features.details.TelevisionDetailsViewModel
 import com.themovieguide.org.features.discover.DiscoverScreen
 import com.themovieguide.org.features.discovertv.DiscoverTelevisionViewModel
 import com.themovieguide.org.features.home.HomeCinema
@@ -56,11 +58,13 @@ import com.themovieguide.org.ui.theme.PinkColor700
 import com.themovieguide.org.ui.theme.gradientColor
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import timber.log.Timber
 
 typealias mainScreen = NavigationScreen.MainScreen
 typealias visitedScreen = NavigationScreen.Visited
 typealias detailScreen = NavigationScreen.DetailScreen
 typealias televisionScreen = NavigationScreen.TelevisionScreen
+typealias tvDetailScreen = NavigationScreen.TelevisionDetailsScreen
 
 @Composable
 fun HomeScreen() {
@@ -149,6 +153,12 @@ private fun Navigation(
             val movieId = backStackEntry.arguments?.getString("id")
             LaunchDetailScreen(backStackEntry, navController, movieId)
         }
+
+        composable(tvDetailScreen.route, arguments = detailArguments) { backStackEntry ->
+            stateBottom.value = false
+            val seriesId = backStackEntry.arguments?.getString("id")
+            LaunchedTvDetailsScreen(backStackEntry, navController, seriesId)
+        }
     }
 }
 
@@ -160,7 +170,15 @@ fun LaunchDiscover(
     val movieEntry = remember(backStackEntry) {
         navController.getBackStackEntry(mainScreen.route)
     }
+
+    /** instance a model **/
     val viewModel = hiltViewModel<MovieDetailsViewModel>(movieEntry)
+
+    viewModel.fetchVisitedMovies()
+
+    /** observe data and get the data state **/
+    val modelState = viewModel.mediaShared.collectAsStateWithLifecycle(initialValue = null)
+
     DiscoverScreen(
         navController = navController,
         viewModel = viewModel,
@@ -249,6 +267,23 @@ private fun LaunchDetailScreen(
         visible = isVisible,
         navController = navController,
     )
+}
+
+@Composable
+fun LaunchedTvDetailsScreen(
+    backStackEntry: NavBackStackEntry,
+    navController: NavHostController,
+    seriesId: String?,
+) {
+    val tvEntry = remember(backStackEntry) {
+        navController.getBackStackEntry(mainScreen.route)
+    }
+    val detailsModel = hiltViewModel<TelevisionDetailsViewModel>(tvEntry)
+    /** call details **/
+    detailsModel.fetchMovieDetails(seriesId = seriesId?.toInt() ?: 0)
+    /** observe result details **/
+    val detailsState = detailsModel.detailsShared.collectAsStateWithLifecycle(initialValue = null)
+    TelevisionDetailsScreen(detailsState = detailsState.value, navController = navController)
 }
 
 @Composable

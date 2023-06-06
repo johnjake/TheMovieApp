@@ -53,7 +53,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
-import com.themovieguide.data.utils.castToJson
 import com.themovieguide.domain.model.television.LiveVision
 import com.themovieguide.domain.utils.EMPTY
 import com.themovieguide.org.R
@@ -252,7 +251,7 @@ fun TelevisionUI(
                 }
                 Row {
                     /** Discover Television **/
-                    MoviePagingTitle(title = "Discover")
+                    MoviePagingTitle(title = "Discover TV")
                 }
                 /** Discover Television Horizontal grid **/
                 Row {
@@ -268,7 +267,7 @@ fun TelevisionUI(
                 }
                 /** Trending title **/
                 Row {
-                    MoviePagingTitle(title = "This Week")
+                    MoviePagingTitle(title = "This Week TV")
                 }
                 /** Trending this week Television vertical grid **/
                 Row {
@@ -299,11 +298,11 @@ private fun DiscoverTelevision(
                 val title = tv[index].name ?: EMPTY
                 val path = tv[index].posterPath ?: default_image
                 val url = path.imageUrl()
-                val movieId = tv[index].id ?: 0
+                val seriesId = tv[index].id ?: 0
                 AsyncImageLoad(
                     url = url,
                     description = title,
-                    onClick = { onClickMovie(movieId = movieId, navController = navController) },
+                    onClick = { onClickTvShow(seriesId = seriesId, navController = navController) },
                 )
             }
         }
@@ -322,8 +321,8 @@ private fun TrendingThisWeek(
             Card(modifier = modifierPagingItemCardView) {
                 val path = tv[index].posterPath ?: default_image
                 val url = path.imageUrl()
-                val movieId = tv[index].id ?: 0
-                AsyncItemImg(url = url, description = title, onClick = { onClickMovie(movieId = movieId, navController = navController) })
+                val seriesId = tv[index].id ?: 0
+                AsyncItemImg(url = url, description = title, onClick = { onClickTvShow(seriesId = seriesId, navController = navController) })
             }
         }
     }
@@ -517,6 +516,6 @@ private val searchTextStyle = TextStyle(
 private fun clickMovie(movieId: Int, navController: NavHostController) {
     navController.navigate(NavigationScreen.MainScreen.createRoute(id = movieId.toString()))
 }
-fun onClickMovie(movieId: Int, navController: NavHostController) {
-    navController.navigate(NavigationScreen.NowShowing.createRoute(id = movieId.toString()))
+fun onClickTvShow(seriesId: Int, navController: NavHostController) {
+    navController.navigate(NavigationScreen.TelevisionScreen.createRoute(id = seriesId.toString()))
 }

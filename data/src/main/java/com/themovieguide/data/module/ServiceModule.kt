@@ -1,6 +1,7 @@
 package com.themovieguide.data.module
 import com.themovieguide.data.features.cast.CastImpl
 import com.themovieguide.data.features.details.DetailsMovieRepository
+import com.themovieguide.data.features.details.GetDetailsTelevisionImpl
 import com.themovieguide.data.features.details.MovieDetailsImpl
 import com.themovieguide.data.features.discover.DiscoverTvImpl
 import com.themovieguide.data.features.ratedtv.RatedTvImpl
@@ -14,6 +15,7 @@ import com.themovieguide.data.features.trending.TrendingImpl
 import com.themovieguide.data.features.upcoming.UpcomingImpl
 import com.themovieguide.data.repository.cast.MovieCastCase
 import com.themovieguide.data.repository.details.MovieDetailsCase
+import com.themovieguide.data.repository.details.SeriesDetailsCase
 import com.themovieguide.data.repository.discovertv.DiscoverTvShowCase
 import com.themovieguide.data.repository.ratedtv.RatedTvShowCase
 import com.themovieguide.data.repository.search.SearchCase
@@ -24,6 +26,7 @@ import com.themovieguide.data.repository.toprated.TopRatedCase
 import com.themovieguide.data.repository.trending.TrendingTvShowCase
 import com.themovieguide.data.repository.upcoming.UpcomingCase
 import com.themovieguide.data.sources.local.database.AppDatabase
+import com.themovieguide.data.sources.local.repository.details.DetailsDBRepository
 import com.themovieguide.data.sources.local.repository.discover.DiscoverDBRepository
 import com.themovieguide.data.sources.local.repository.ratedtv.RatedTelevisionDBRepository
 import com.themovieguide.data.sources.local.repository.search.SearchDBRepository
@@ -39,6 +42,8 @@ import com.themovieguide.domain.features.cast.CastRepository
 import com.themovieguide.domain.features.cast.MovieCast
 import com.themovieguide.domain.features.details.Details
 import com.themovieguide.domain.features.details.DetailsRepository
+import com.themovieguide.domain.features.details.GetDetailsTelevision
+import com.themovieguide.domain.features.details.GetDetailsTelevisionRepository
 import com.themovieguide.domain.features.discover.DiscoverTv
 import com.themovieguide.domain.features.discover.DiscoverTvRepository
 import com.themovieguide.domain.features.ratedtv.RatedTv
@@ -211,6 +216,26 @@ object ServiceModule {
         television: TrendingTv,
         storage: TrendingDBRepository,
     ): TrendingTvRepository = TrendingTvShowCase(
+        television = television,
+        storage = storage,
+    )
+
+    @Provides
+    fun provideGetDetailsTelevision(
+        api: ApiServices,
+        storage: DetailsDBRepository,
+        signal: Connectivity,
+    ): GetDetailsTelevision = GetDetailsTelevisionImpl(
+        api = api,
+        storage = storage,
+        signal = signal,
+    )
+
+    @Provides
+    fun providesGetDetailsTelevisionCase(
+        television: GetDetailsTelevision,
+        storage: DetailsDBRepository,
+    ): GetDetailsTelevisionRepository = SeriesDetailsCase(
         television = television,
         storage = storage,
     )

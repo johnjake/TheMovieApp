@@ -1,6 +1,8 @@
 package com.themovieguide.data.sources.local.module
 
 import com.themovieguide.data.sources.local.database.AppDatabase
+import com.themovieguide.data.sources.local.repository.details.DetailsDBImpl
+import com.themovieguide.data.sources.local.repository.details.DetailsDBRepository
 import com.themovieguide.data.sources.local.repository.discover.DiscoverDBImpl
 import com.themovieguide.data.sources.local.repository.discover.DiscoverDBRepository
 import com.themovieguide.data.sources.local.repository.ratedtv.RatedTelevisionDBImpl
@@ -58,4 +60,7 @@ class StorageModule {
 
     @Provides
     fun provideStorageTrending(storage: AppDatabase): TrendingDBRepository = TrendingDBImpl(app = storage)
+
+    @Provides
+    fun provideStorageDetails(storage: AppDatabase): DetailsDBRepository = DetailsDBImpl(app = storage)
 }

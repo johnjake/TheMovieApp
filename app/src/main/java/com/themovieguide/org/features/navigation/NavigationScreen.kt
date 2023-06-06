@@ -32,7 +32,7 @@ sealed class NavigationScreen(val route: String, var icon: ImageVector, var titl
         title = "Television",
     ) {
         fun createRoute(id: String): String {
-            return "details_screen/$id"
+            return "television_details_screen/$id"
         }
     }
 
@@ -49,6 +49,16 @@ sealed class NavigationScreen(val route: String, var icon: ImageVector, var titl
     ) {
         fun createRoute(id: String): String {
             return "details_screen/$id"
+        }
+    }
+
+    object TelevisionDetailsScreen : NavigationScreen(
+        route = "television_details_screen/{id}",
+        icon = Icons.Default.Settings,
+        title = "TV Details",
+    ) {
+        fun createRoute(id: String): String {
+            return "television_details_screen/$id"
         }
     }
     fun withArgs(vararg args: String): String {
