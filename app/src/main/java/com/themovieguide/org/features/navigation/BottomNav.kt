@@ -41,7 +41,6 @@ import com.themovieguide.org.features.details.MovieDetailsScreen
 import com.themovieguide.org.features.details.MovieDetailsViewModel
 import com.themovieguide.org.features.details.TelevisionDetailsScreen
 import com.themovieguide.org.features.details.TelevisionDetailsViewModel
-import com.themovieguide.org.features.discover.DiscoverScreen
 import com.themovieguide.org.features.discovertv.DiscoverTelevisionViewModel
 import com.themovieguide.org.features.home.HomeCinema
 import com.themovieguide.org.features.home.ShowingViewModel
@@ -50,6 +49,7 @@ import com.themovieguide.org.features.ratedtv.RatedTelevisionViewModel
 import com.themovieguide.org.features.search.SearchViewModel
 import com.themovieguide.org.features.searchtv.SearchTelevisionViewModel
 import com.themovieguide.org.features.television.TelevisionScreen
+import com.themovieguide.org.features.tickets.VenturedShow
 import com.themovieguide.org.features.todayair.TodayAirViewModel
 import com.themovieguide.org.features.trending.TrendingViewModel
 import com.themovieguide.org.features.upcoming.UpcomingViewModel
@@ -58,7 +58,6 @@ import com.themovieguide.org.ui.theme.PinkColor700
 import com.themovieguide.org.ui.theme.gradientColor
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import timber.log.Timber
 
 typealias mainScreen = NavigationScreen.MainScreen
 typealias visitedScreen = NavigationScreen.Visited
@@ -144,7 +143,7 @@ private fun Navigation(
         }
 
         composable(visitedScreen.route) { backStackEntry ->
-            stateBottom.value = false
+            stateBottom.value = true
             LaunchDiscover(backStackEntry, navController)
         }
 
@@ -155,7 +154,7 @@ private fun Navigation(
         }
 
         composable(tvDetailScreen.route, arguments = detailArguments) { backStackEntry ->
-            stateBottom.value = false
+            stateBottom.value = true
             val seriesId = backStackEntry.arguments?.getString("id")
             LaunchedTvDetailsScreen(backStackEntry, navController, seriesId)
         }
@@ -172,16 +171,11 @@ fun LaunchDiscover(
     }
 
     /** instance a model **/
-    val viewModel = hiltViewModel<MovieDetailsViewModel>(movieEntry)
+    val viewModel = hiltViewModel<ShowingViewModel>(movieEntry)
 
-    viewModel.fetchVisitedMovies()
-
-    /** observe data and get the data state **/
-    val modelState = viewModel.mediaShared.collectAsStateWithLifecycle(initialValue = null)
-
-    DiscoverScreen(
-        navController = navController,
+    VenturedShow(
         viewModel = viewModel,
+        navController = navController,
     )
 }
 
@@ -333,7 +327,7 @@ fun imagePainter(title: String): Painter {
     return when (title) {
         NavigationScreen.MainScreen.title -> painterResource(id = R.drawable.ic_now_showing)
         NavigationScreen.TelevisionScreen.title -> painterResource(id = R.drawable.ic_television)
-        NavigationScreen.Visited.title -> painterResource(id = R.drawable.ic_people_choice)
+        NavigationScreen.Visited.title -> painterResource(id = R.drawable.ic_tickets)
         else -> painterResource(id = R.drawable.ic_now_showing)
     }
 }

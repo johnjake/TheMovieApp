@@ -251,7 +251,7 @@ fun TelevisionUI(
                 }
                 Row {
                     /** Discover Television **/
-                    MoviePagingTitle(title = "Discover TV")
+                    MoviePagingTitle(title = "Discover TV Series")
                 }
                 /** Discover Television Horizontal grid **/
                 Row {
@@ -267,7 +267,7 @@ fun TelevisionUI(
                 }
                 /** Trending title **/
                 Row {
-                    MoviePagingTitle(title = "This Week TV")
+                    MoviePagingTitle(title = "This Week TV Series")
                 }
                 /** Trending this week Television vertical grid **/
                 Row {

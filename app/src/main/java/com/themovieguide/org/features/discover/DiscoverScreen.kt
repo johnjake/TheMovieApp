@@ -17,7 +17,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,13 +24,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.themovieguide.data.utils.castToLongDate
 import com.themovieguide.domain.model.Movies
 import com.themovieguide.domain.states.showing.StateMovies
 import com.themovieguide.domain.utils.EMPTY
-import com.themovieguide.org.features.details.MovieDetailsViewModel
 import com.themovieguide.org.features.home.onClickMovie
 import com.themovieguide.org.features.utils.default_image
 import com.themovieguide.org.features.utils.imageUrl
@@ -44,15 +41,11 @@ import com.themovieguide.org.ui.theme.text.VisitedTitle
 import timber.log.Timber
 
 @Composable
-fun DiscoverScreen(navController: NavHostController, viewModel: MovieDetailsViewModel) {
+fun DiscoverScreen(navController: NavHostController, modelState: StateMovies?) {
     val context = LocalContext.current
     val isLoading = remember { mutableStateOf(false) }
     val mainList: MutableList<Movies> = arrayListOf()
-    LaunchedEffect(key1 = viewModel) {
-        viewModel.fetchVisitedMovies()
-    }
-    val model = viewModel.mediaShared.collectAsStateWithLifecycle(initialValue = null)
-    when (val response = model.value) {
+    when (modelState) {
         is StateMovies.ShowLoader -> {
             isLoading.value = true
         }
@@ -61,9 +54,9 @@ fun DiscoverScreen(navController: NavHostController, viewModel: MovieDetailsView
         }
         is StateMovies.OnSuccess -> {
             mainList.clear()
-            mainList.addAll(response.data)
+            mainList.addAll(modelState.data)
         }
-        is StateMovies.OnFailure -> context.toast(msg = response.error, duration = 1)
+        is StateMovies.OnFailure -> context.toast(msg = modelState.error, duration = 1)
         else -> Timber.e("DiscoverScreen, initial call with empty returns")
     }
 

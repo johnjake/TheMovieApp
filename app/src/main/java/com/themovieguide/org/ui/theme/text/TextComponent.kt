@@ -26,6 +26,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
+import com.themovieguide.org.features.utils.MovieSelection
+import com.themovieguide.org.features.utils.nunitoFamily
+import com.themovieguide.org.features.utils.toStandardDate
+import com.themovieguide.org.ui.theme.Default800
+import com.themovieguide.org.ui.theme.Gray800
+import com.themovieguide.org.ui.theme.PinkColor700
+import com.themovieguide.org.ui.theme.Primary800
 import com.themovieguide.org.ui.theme.modifier.modifierBodyTop
 import com.themovieguide.org.ui.theme.modifier.modifierPagingTitleTop
 import com.themovieguide.org.ui.theme.modifier.modifierSearchResult
@@ -34,13 +41,6 @@ import com.themovieguide.org.ui.theme.modifier.modifierTheaterTitle
 import com.themovieguide.org.ui.theme.modifier.modifierTitleTop
 import com.themovieguide.org.ui.theme.modifier.modifierToday
 import com.themovieguide.org.ui.theme.modifier.modifierViewAll
-import com.themovieguide.org.features.utils.MovieSelection
-import com.themovieguide.org.features.utils.nunitoFamily
-import com.themovieguide.org.features.utils.toStandardDate
-import com.themovieguide.org.ui.theme.Default800
-import com.themovieguide.org.ui.theme.Gray800
-import com.themovieguide.org.ui.theme.PinkColor700
-import com.themovieguide.org.ui.theme.Primary800
 import org.burnoutcrew.reorderable.ReorderableLazyGridState
 import org.burnoutcrew.reorderable.detectReorderAfterLongPress
 
@@ -395,7 +395,7 @@ fun TelevisionSelection(selectionSlide: MutableState<Boolean>) {
         horizontalArrangement = Arrangement.Start,
     ) {
         Text(
-            text = "Today's TV Series",
+            text = "Today's TV",
             textAlign = TextAlign.Justify,
             fontStyle = FontStyle.Normal,
             fontWeight = if (selectedText == MovieSelection.TODAY_MOVIE) FontWeight.ExtraBold else FontWeight.Normal,
@@ -409,7 +409,7 @@ fun TelevisionSelection(selectionSlide: MutableState<Boolean>) {
         )
 
         Text(
-            text = "Top TV Series",
+            text = "Top Rated",
             textAlign = TextAlign.Justify,
             fontStyle = FontStyle.Normal,
             fontWeight = if (selectedText == MovieSelection.TODAY_MOVIE) FontWeight.Normal else FontWeight.ExtraBold,

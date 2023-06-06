@@ -248,6 +248,32 @@ fun TheaterDB.castToMovies(): Movies {
     )
 }
 
+private fun MovieDB.castToMovies(): Movies {
+    return Movies(
+        key = this.movieKey ?: 0,
+        adult = this.adult,
+        backdropPath = this.backdropPath,
+        genreIds = this.genres?.castToList(),
+        id = this.id,
+        originalLanguage = this.originalLang,
+        originalTitle = this.originalTitle,
+        overview = this.overview,
+        popularity = this.popularity,
+        posterPath = this.posterPath,
+        releaseDate = this.releaseDate,
+        title = this.title,
+        video = false,
+        voteAverage = this.voteAverage,
+        voteCount = this.voteCount,
+    )
+}
+
+fun List<MovieDB>.castToListMovies(): List<Movies> {
+    return this.map {
+        it.castToMovies()
+    }
+}
+
 fun List<TheaterDB>.castToMovieList(): List<Movies> {
     return this.map { db ->
         db.castToMovies()
