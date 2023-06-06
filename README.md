@@ -40,7 +40,7 @@ Used in Development:
    
       Settings
    
-  ![alt text](https://github.com/johnjake/i7marketing/blob/main/movie_ui.png)
+  ![alt text](https://github.com/johnjake/TheMovieApp/blob/main/interface.png)
   
 
 
