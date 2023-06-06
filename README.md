@@ -1,5 +1,4 @@
-# Movie Review   ![alt text](https://github.com/johnjake/i7marketing/blob/main/movie_icon.png)
-
+# Movie Review
 Movie Review - Your ultimate companion for all things cinema! Discover the latest movies playing in theaters, explore what's currently showing, and get a sneak peek at upcoming releases. Whether you're a movie enthusiast or simply looking for a great film to watch, this app has got you covered .
 
 Used in Development: 
