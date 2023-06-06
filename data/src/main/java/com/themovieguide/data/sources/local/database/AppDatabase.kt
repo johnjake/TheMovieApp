@@ -12,6 +12,7 @@ import com.themovieguide.data.sources.local.dao.SearchTvDao
 import com.themovieguide.data.sources.local.dao.TheaterDao
 import com.themovieguide.data.sources.local.dao.TodayAirDao
 import com.themovieguide.data.sources.local.dao.TopRatedDao
+import com.themovieguide.data.sources.local.dao.TrendingDao
 import com.themovieguide.data.sources.local.dao.UpcomingDao
 import com.themovieguide.data.sources.local.model.DiscoverDB
 import com.themovieguide.data.sources.local.model.MovieDB
@@ -21,6 +22,7 @@ import com.themovieguide.data.sources.local.model.SearchTvDB
 import com.themovieguide.data.sources.local.model.TheaterDB
 import com.themovieguide.data.sources.local.model.TodayAirDB
 import com.themovieguide.data.sources.local.model.TopRatedDB
+import com.themovieguide.data.sources.local.model.TrendingDB
 import com.themovieguide.data.sources.local.model.UpcomingDB
 import com.themovieguide.data.utils.MARKETING_DB
 
@@ -35,8 +37,9 @@ import com.themovieguide.data.utils.MARKETING_DB
         SearchTvDB::class,
         TodayAirDB::class,
         DiscoverDB::class,
+        TrendingDB::class,
     ],
-    version = 1,
+    version = 3,
     exportSchema = false,
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -49,6 +52,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun searchTvDao(): SearchTvDao
     abstract fun todayAirDao(): TodayAirDao
     abstract fun discoverDao(): DiscoverDao
+    abstract fun trendingDao(): TrendingDao
     companion object {
         fun getInstance(context: Context): AppDatabase = buildDatabase(context)
         private fun buildDatabase(context: Context) =

@@ -15,6 +15,8 @@ import com.themovieguide.data.sources.local.repository.todaytv.TodayAirDBImpl
 import com.themovieguide.data.sources.local.repository.todaytv.TodayAirDBRepository
 import com.themovieguide.data.sources.local.repository.toprated.TopRatedDBImpl
 import com.themovieguide.data.sources.local.repository.toprated.TopRatedDBRepository
+import com.themovieguide.data.sources.local.repository.trending.TrendingDBImpl
+import com.themovieguide.data.sources.local.repository.trending.TrendingDBRepository
 import com.themovieguide.data.sources.local.repository.upcoming.UpcomingDBImpl
 import com.themovieguide.data.sources.local.repository.upcoming.UpcomingDBRepository
 import com.themovieguide.data.sources.local.repository.visited.DBMovieImpl
@@ -53,4 +55,7 @@ class StorageModule {
 
     @Provides
     fun provideStorageDiscover(storage: AppDatabase): DiscoverDBRepository = DiscoverDBImpl(app = storage)
+
+    @Provides
+    fun provideStorageTrending(storage: AppDatabase): TrendingDBRepository = TrendingDBImpl(app = storage)
 }

@@ -1,20 +1,20 @@
-package com.themovieguide.data.sources.local.repository.discover
+package com.themovieguide.data.sources.local.repository.trending
 
 import com.themovieguide.data.sources.local.database.AppDatabase
-import com.themovieguide.data.sources.local.model.DiscoverDB
+import com.themovieguide.data.sources.local.model.TrendingDB
 import com.themovieguide.data.utils.EMPTY
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class DiscoverDBImpl @Inject constructor(
+class TrendingDBImpl @Inject constructor(
     private var app: AppDatabase,
-) : DiscoverDBRepository {
-    override fun insert(tv: DiscoverDB) {
-        app.discoverDao().insert(tv)
+) : TrendingDBRepository {
+    override fun insert(tv: TrendingDB) {
+        app.trendingDao().insert(tv)
     }
 
-    override fun insertTelevision(tv: DiscoverDB) {
-        app.discoverDao().insertTelevision(
+    override fun insertTelevision(tv: TrendingDB) {
+        app.trendingDao().insertTelevision(
             backdropPath = tv.backdropPath ?: EMPTY,
             firstAirDate = tv.firstAirDate ?: EMPTY,
             genreIds = tv.genreIds ?: EMPTY,
@@ -31,23 +31,23 @@ class DiscoverDBImpl @Inject constructor(
         )
     }
 
-    override fun getTelevision(): Flow<List<DiscoverDB>> {
-        return app.discoverDao().getTelevision()
+    override fun getTelevision(): Flow<List<TrendingDB>> {
+        return app.trendingDao().getTelevision()
     }
 
-    override fun getTelevisionByTitle(): Flow<List<DiscoverDB>> {
-        return app.discoverDao().getTelevisionByTitle()
+    override fun getTelevisionByTitle(): Flow<List<TrendingDB>> {
+        return app.trendingDao().getTelevisionByTitle()
     }
 
-    override suspend fun getTelevisionById(tvId: Int): DiscoverDB {
-        return app.discoverDao().getTelevisionById(tvId)
+    override suspend fun getTelevisionById(tvId: Int): TrendingDB {
+        return app.trendingDao().getTelevisionById(tvId)
     }
 
     override suspend fun deleteTelevision(tvId: Int) {
-        app.discoverDao().deleteTelevision(tvId)
+        app.trendingDao().deleteTelevision(tvId)
     }
 
     override suspend fun delete() {
-        app.discoverDao().delete()
+        app.trendingDao().delete()
     }
 }

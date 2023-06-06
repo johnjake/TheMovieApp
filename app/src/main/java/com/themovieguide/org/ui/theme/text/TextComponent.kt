@@ -78,7 +78,7 @@ fun MoviePagingTitle(title: String) {
         fontStyle = FontStyle.Normal,
         fontWeight = FontWeight.ExtraBold,
         fontSize = 17.sp,
-        color = Color.White,
+        color = PinkColor700,
         modifier = modifierPagingTitleTop,
     )
 }

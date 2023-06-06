@@ -9,6 +9,7 @@ import com.themovieguide.data.sources.local.dao.SearchTvDao
 import com.themovieguide.data.sources.local.dao.TheaterDao
 import com.themovieguide.data.sources.local.dao.TodayAirDao
 import com.themovieguide.data.sources.local.dao.TopRatedDao
+import com.themovieguide.data.sources.local.dao.TrendingDao
 import com.themovieguide.data.sources.local.dao.UpcomingDao
 import com.themovieguide.data.sources.local.database.AppDatabase
 import dagger.Module
@@ -52,4 +53,7 @@ class DaoModule {
 
     @Provides
     fun provideDiscoverDao(db: AppDatabase): DiscoverDao = db.discoverDao()
+
+    @Provides
+    fun providesTrendingDao(db: AppDatabase): TrendingDao = db.trendingDao()
 }

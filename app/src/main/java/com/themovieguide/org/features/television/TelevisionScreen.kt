@@ -12,7 +12,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
@@ -49,6 +53,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import com.themovieguide.data.utils.castToJson
 import com.themovieguide.domain.model.television.LiveVision
 import com.themovieguide.domain.utils.EMPTY
 import com.themovieguide.org.R
@@ -63,8 +68,10 @@ import com.themovieguide.org.ui.theme.LightDark220
 import com.themovieguide.org.ui.theme.PinkColor700
 import com.themovieguide.org.ui.theme.gradientHome
 import com.themovieguide.org.ui.theme.images.AsyncImageLoad
+import com.themovieguide.org.ui.theme.images.AsyncItemImg
 import com.themovieguide.org.ui.theme.images.AsyncSearchImageLoad
 import com.themovieguide.org.ui.theme.modifier.modifierCardView
+import com.themovieguide.org.ui.theme.modifier.modifierPagingItemCardView
 import com.themovieguide.org.ui.theme.modifier.modifierRowIndicator
 import com.themovieguide.org.ui.theme.modifier.modifierSearch
 import com.themovieguide.org.ui.theme.modifier.modifierSearchBox
@@ -76,6 +83,7 @@ import com.themovieguide.org.ui.theme.rating.RatingStar
 import com.themovieguide.org.ui.theme.text.DateRelease
 import com.themovieguide.org.ui.theme.text.DateReleaseSearch
 import com.themovieguide.org.ui.theme.text.DisplayText
+import com.themovieguide.org.ui.theme.text.MoviePagingTitle
 import com.themovieguide.org.ui.theme.text.MovieRating
 import com.themovieguide.org.ui.theme.text.MovieTitle
 import com.themovieguide.org.ui.theme.text.ResultText
@@ -87,6 +95,8 @@ import timber.log.Timber
 fun TelevisionScreen(
     ratedState: StateLiveTelevision<List<LiveVision>>?,
     todayState: StateLiveTelevision<List<LiveVision>>?,
+    discoverState: StateLiveTelevision<List<LiveVision>>?,
+    trendingState: StateLiveTelevision<List<LiveVision>>?,
     searchModel: SearchTelevisionViewModel,
     navController: NavHostController,
 ) {
@@ -99,6 +109,8 @@ fun TelevisionScreen(
     ) {
         val mutableRated: MutableList<LiveVision> = arrayListOf()
         val mutableToday: MutableList<LiveVision> = arrayListOf()
+        val mutableCover: MutableList<LiveVision> = arrayListOf()
+        val mutableTrend: MutableList<LiveVision> = arrayListOf()
 
         /** extract data from state **/
         when (ratedState) {
@@ -115,17 +127,42 @@ fun TelevisionScreen(
         when (todayState) {
             is StateLiveTelevision.ShowLoader -> { }
             is StateLiveTelevision.HideLoader -> { }
-            is StateLiveTelevision.OnFailure -> Timber.e("RatedTelevision Error: ${todayState.error}")
+            is StateLiveTelevision.OnFailure -> Timber.e("TodayAirShow Error: ${todayState.error}")
             is StateLiveTelevision.OnSuccess -> {
                 mutableToday.clear()
                 mutableToday.addAll(todayState.data)
             }
             else -> Timber.e("TodayAirShow: No initial data")
         }
+
+        when (discoverState) {
+            is StateLiveTelevision.ShowLoader -> { }
+            is StateLiveTelevision.HideLoader -> { }
+            is StateLiveTelevision.OnFailure -> Timber.e("DiscoverState Error: ${discoverState.error}")
+            is StateLiveTelevision.OnSuccess -> {
+                mutableCover.clear()
+                mutableCover.addAll(discoverState.data)
+            }
+            else -> Timber.e("DiscoverState: No initial data")
+        }
+
+        when (trendingState) {
+            is StateLiveTelevision.ShowLoader -> { }
+            is StateLiveTelevision.HideLoader -> { }
+            is StateLiveTelevision.OnFailure -> Timber.e("TrendingState Error: ${trendingState.error}")
+            is StateLiveTelevision.OnSuccess -> {
+                mutableTrend.clear()
+                mutableTrend.addAll(trendingState.data)
+            }
+            else -> Timber.e("TrendingState: No initial data")
+        }
+
         TelevisionUI(
             searchModel = searchModel,
             mutableRated = mutableRated,
             mutableToday = mutableToday,
+            mutableCover = mutableCover,
+            mutableTrend = mutableTrend,
             navController = navController,
         )
     }
@@ -137,12 +174,13 @@ fun TelevisionUI(
     searchModel: SearchTelevisionViewModel,
     mutableRated: MutableList<LiveVision>,
     mutableToday: MutableList<LiveVision>,
+    mutableCover: MutableList<LiveVision>,
+    mutableTrend: MutableList<LiveVision>,
     navController: NavHostController,
 ) {
     val state = rememberPagerState()
     val isSearch = remember { mutableStateOf(false) }
     val selectionSlide = remember { mutableStateOf(false) }
-    val theaterSlide = remember { mutableStateOf(false) }
     val mainList: MutableList<LiveVision> = arrayListOf()
 
     Box {
@@ -212,6 +250,80 @@ fun TelevisionUI(
                         unSelectedColor = LightDark220,
                     )
                 }
+                Row {
+                    /** Discover Television **/
+                    MoviePagingTitle(title = "Discover")
+                }
+                /** Discover Television Horizontal grid **/
+                Row {
+                    LazyRow {
+                        items(count = mutableCover.count()) { index ->
+                            DiscoverTelevision(
+                                navController = navController,
+                                tv = mutableCover,
+                                index = index,
+                            )
+                        }
+                    }
+                }
+                /** Trending title **/
+                Row {
+                    MoviePagingTitle(title = "This Week")
+                }
+                /** Trending this week Television vertical grid **/
+                Row {
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(3),
+                        modifier = Modifier
+                            .size(420.dp),
+                    ) {
+                        items(count = mutableTrend.count()) { index ->
+                            TrendingThisWeek(navController, mutableTrend, index)
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun DiscoverTelevision(
+    navController: NavHostController,
+    tv: List<LiveVision>,
+    index: Int,
+) {
+    Box {
+        Column(modifier = Modifier.padding(top = 16.dp, start = 5.dp)) {
+            Card(modifier = modifierCardView) {
+                val title = tv[index].name ?: EMPTY
+                val path = tv[index].posterPath ?: default_image
+                val url = path.imageUrl()
+                val movieId = tv[index].id ?: 0
+                AsyncImageLoad(
+                    url = url,
+                    description = title,
+                    onClick = { onClickMovie(movieId = movieId, navController = navController) },
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun TrendingThisWeek(
+    navController: NavHostController,
+    tv: List<LiveVision>,
+    index: Int,
+) {
+    Box(modifier = Modifier.padding(top = 10.dp, bottom = 10.dp, start = 10.dp, end = 5.dp)) {
+        val title = tv[index]?.name ?: EMPTY
+        Row {
+            Card(modifier = modifierPagingItemCardView) {
+                val path = tv[index].posterPath ?: default_image
+                val url = path.imageUrl()
+                val movieId = tv[index].id ?: 0
+                AsyncItemImg(url = url, description = title, onClick = { onClickMovie(movieId = movieId, navController = navController) })
             }
         }
     }
