@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.themovieguide.data.sources.local.dao.DetailsDao
 import com.themovieguide.data.sources.local.dao.DiscoverDao
 import com.themovieguide.data.sources.local.dao.MovieDao
 import com.themovieguide.data.sources.local.dao.RatedTvDao
@@ -14,6 +15,7 @@ import com.themovieguide.data.sources.local.dao.TodayAirDao
 import com.themovieguide.data.sources.local.dao.TopRatedDao
 import com.themovieguide.data.sources.local.dao.TrendingDao
 import com.themovieguide.data.sources.local.dao.UpcomingDao
+import com.themovieguide.data.sources.local.model.DetailsTvDB
 import com.themovieguide.data.sources.local.model.DiscoverDB
 import com.themovieguide.data.sources.local.model.MovieDB
 import com.themovieguide.data.sources.local.model.RatedTvDB
@@ -38,8 +40,9 @@ import com.themovieguide.data.utils.MARKETING_DB
         TodayAirDB::class,
         DiscoverDB::class,
         TrendingDB::class,
+        DetailsTvDB::class,
     ],
-    version = 3,
+    version = 10,
     exportSchema = false,
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -53,6 +56,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun todayAirDao(): TodayAirDao
     abstract fun discoverDao(): DiscoverDao
     abstract fun trendingDao(): TrendingDao
+    abstract fun detailsDao(): DetailsDao
     companion object {
         fun getInstance(context: Context): AppDatabase = buildDatabase(context)
         private fun buildDatabase(context: Context) =

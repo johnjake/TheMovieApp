@@ -1,5 +1,7 @@
 package com.themovieguide.data.sources.local.mapper
 
+import com.themovieguide.data.model.meta.television.DetailsTelevisionMeta
+import com.themovieguide.data.sources.local.model.DetailsTvDB
 import com.themovieguide.data.sources.local.model.DiscoverDB
 import com.themovieguide.data.sources.local.model.RatedTvDB
 import com.themovieguide.data.sources.local.model.SearchTvDB
@@ -100,6 +102,42 @@ fun LiveVision.castTrendingDB(): TrendingDB {
     )
 }
 
+fun DetailsTelevisionMeta.castToDetailsDB(): DetailsTvDB {
+    return DetailsTvDB(
+        adult = this.adult,
+        backdropPath = this.backdrop_path,
+        createdBy = this.created_by?.castToJson(),
+        episodeRunTime = this.episode_run_time.castToJson(),
+        firstAirDate = this.first_air_date,
+        genres = this.genres.castToJson(),
+        homepage = this.homepage,
+        id = this.id,
+        inProduction = this.in_production,
+        languages = this.languages?.castToJson(),
+        lastAirDate = this.last_air_date,
+        lastEpisodeToAir = this.last_episode_to_air.castToJson(),
+        name = this.name,
+        networks = this.networks.castToJson(),
+        nextEpisodeToAir = this.next_episode_to_air.castToJson(),
+        numberOfEpisodes = this.number_of_episodes,
+        numberOfSeasons = this.number_of_seasons,
+        originCountry = this.origin_country.castToJson(),
+        originalLanguage = this.original_language,
+        originalName = this.original_name,
+        overview = this.overview,
+        popularity = this.popularity,
+        posterPath = this.poster_path,
+        productionCompanies = this.production_companies.castToJson(),
+        productionCountries = this.production_countries.castToJson(),
+        seasons = this.seasons.castToJson(),
+        spokenLanguages = this.spoken_languages.castToJson(),
+        status = this.status,
+        tagline = this.tagline,
+        type = this.type,
+        voteAverage = this.vote_average,
+        voteCount = this.vote_count,
+    )
+}
 fun RatedTvDB.castToTelevision(): LiveVision {
     val genres = if (this.genreIds?.isNotEmpty() == true) this.genreIds.castToList<Int>() else emptyList()
     val orgCountry = if (this.originCountry?.isNotEmpty() == true) this.originCountry.castToList<String>() else emptyList()

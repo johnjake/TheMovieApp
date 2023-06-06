@@ -40,8 +40,10 @@ import androidx.compose.ui.util.lerp
 import com.themovieguide.data.mapper.toCastMovie
 import com.themovieguide.domain.model.cast.Cast
 import com.themovieguide.domain.model.cast.MainCast
+import com.themovieguide.domain.model.television.SeasonEntity
 import com.themovieguide.domain.utils.EMPTY
 import com.themovieguide.org.features.utils.default_profile
+import com.themovieguide.org.features.utils.imageUrl
 import com.themovieguide.org.features.utils.profileUrl
 import com.themovieguide.org.features.utils.readCastFromAsset
 import com.themovieguide.org.ui.theme.PinkColor700
@@ -100,6 +102,122 @@ fun MovieCastPager(casts: MainCast) {
                 },
             )
         }
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun TelevisionSeasonPager(seasonList: List<SeasonEntity>) {
+    val pagerState = rememberPagerState()
+    val coroutineScope = rememberCoroutineScope()
+    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.DarkGray),
+        )
+        val pageSize = 125.dp
+        HorizontalPager(
+            state = pagerState,
+            pageCount = seasonList.size,
+            pageSize = PageSize.Fixed(pageSize = pageSize),
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 10.dp),
+            contentPadding = PaddingValues(
+                start = (maxWidth - pageSize) / 2,
+                end = (maxWidth - pageSize) / 2,
+            ),
+            flingBehavior = PagerDefaults.flingBehavior(
+                state = pagerState,
+                pagerSnapDistance = PagerSnapDistance.atMost(30),
+                snapAnimationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
+            ),
+        ) { page ->
+
+            CircleSeasonFilterItem(
+                season = seasonList[page],
+                pagerState = pagerState,
+                page = page,
+                onPageSelected = {
+                    coroutineScope.launch {
+                        pagerState.animateScrollToPage(page)
+                    }
+                },
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun CircleSeasonFilterItem(
+    season: SeasonEntity,
+    pagerState: PagerState,
+    page: Int,
+    onPageSelected: (SeasonEntity) -> Unit,
+) {
+    Column(
+        modifier = Modifier
+            .clickable {
+                onPageSelected(season)
+            }
+            .graphicsLayer {
+                // Calculate the absolute offset for the current page from the
+                // scroll position. We use the absolute value which allows us to mirror
+                // any effects for both directions
+                val pageOffset = (
+                    (pagerState.currentPage - page) + pagerState
+                        .currentPageOffsetFraction
+                    ).absoluteValue
+
+                // We animate the scaleX + scaleY, between 85% and 100%
+                lerp(
+                    start = 0.85f,
+                    stop = 1f,
+                    fraction = 1f - pageOffset.coerceIn(0f, 1f),
+                ).also { scale ->
+                    scaleX = scale
+                    scaleY = scale
+                }
+
+                // We animate the alpha, between 50% and 100%
+                alpha = lerp(
+                    start = 0.25f,
+                    stop = 1f,
+                    fraction = 1f - pageOffset.coerceIn(0f, 1f),
+                )
+            },
+    ) {
+        Box(modifier = Modifier.align(Alignment.CenterHorizontally)) {
+            if (pagerState.currentPage == page) {
+                Box(
+                    modifier = Modifier
+                        .size(120.dp)
+                        .clip(CircleShape),
+                )
+            }
+            val pathUrl = season.poster_path
+            val imgProfile = pathUrl?.imageUrl() ?: default_profile
+            Image(
+                painter = imageProfile(param = imgProfile),
+                contentDescription = season.name,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .size(120.dp)
+                    .padding(1.dp)
+                    .border(BorderStroke(2.dp, PinkColor700), CircleShape)
+                    .clip(CircleShape),
+            )
+        }
+        Text(
+            season.name ?: EMPTY,
+            maxLines = 1,
+            textAlign = TextAlign.Center,
+            color = Color.White,
+            modifier = Modifier.fillMaxWidth(),
+        )
     }
 }
 

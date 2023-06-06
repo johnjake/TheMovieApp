@@ -6,4 +6,10 @@ data class LanguageEntity(
     val englishName: String? = EMPTY,
     val iso6391: String? = EMPTY,
     val name: String? = EMPTY,
-)
+) {
+    constructor() : this(
+        englishName = EMPTY,
+        iso6391 = EMPTY,
+        name = EMPTY
+    )
+}

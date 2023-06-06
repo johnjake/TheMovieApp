@@ -1,6 +1,5 @@
 package com.themovieguide.org.features.details
 
-import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandIn
@@ -37,18 +36,13 @@ import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
-import com.themovieguide.data.mapper.toCastMovie
-import com.themovieguide.data.mapper.toMovieEntity
 import com.themovieguide.domain.model.Movie
 import com.themovieguide.domain.model.cast.MainCast
 import com.themovieguide.domain.states.cast.StateCast
@@ -56,8 +50,6 @@ import com.themovieguide.domain.states.details.StateDetails
 import com.themovieguide.domain.utils.EMPTY
 import com.themovieguide.org.features.utils.default_image
 import com.themovieguide.org.features.utils.imageUrl
-import com.themovieguide.org.features.utils.readCastFromAsset
-import com.themovieguide.org.features.utils.readJsonFromAsset
 import com.themovieguide.org.ui.theme.AnimatedText
 import com.themovieguide.org.ui.theme.gradientHome
 import com.themovieguide.org.ui.theme.images.ArrowBackPainter
@@ -80,17 +72,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-private fun ShowMovieDetails() {
-    val navController = rememberNavController()
-    val details = readJsonFromAsset(LocalContext.current, "Details.json")
-    val castDetails = readCastFromAsset(LocalContext.current, "Cast.json")
-    val movieDetails = details.toMovieEntity()
-    val cast = castDetails.toCastMovie()
-    HeaderDetails(movie = movieDetails, cast = cast, navController = navController)
-}
-
 @Composable
 fun MovieDetailsScreen(
     viewModel: MovieDetailsViewModel,
@@ -99,7 +80,6 @@ fun MovieDetailsScreen(
     visible: MutableState<Boolean>,
     navController: NavHostController,
 ) {
-    val context = LocalContext.current
     val expandSpec = tween<IntSize>(durationMillis = 500)
     val dataMovie = remember { mutableStateOf(Movie()) }
     val dataCast = remember { mutableStateOf(MainCast()) }
@@ -138,7 +118,6 @@ fun MovieDetailsScreen(
         withContext(Dispatchers.IO) {
             viewModel.insertLocalMovie(dataMovie.value)
         }
-        Toast.makeText(context, "Successfully added ${dataMovie.value.title}", Toast.LENGTH_SHORT).show()
     }
 }
 
@@ -344,7 +323,7 @@ private fun HeaderDetails(
 }
 
 @Composable
-private fun ImgBackGround(url: String) {
+fun ImgBackGround(url: String) {
     Image(
         painter = imagePainter(param = url),
         contentDescription = null,

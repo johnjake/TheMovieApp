@@ -3,7 +3,6 @@ package com.themovieguide.data.features.discover
 import com.themovieguide.data.BuildConfig
 import com.themovieguide.data.mapper.castToLiveVision
 import com.themovieguide.data.sources.local.mapper.castDiscoverDB
-import com.themovieguide.data.sources.local.mapper.castToTelevisionDB
 import com.themovieguide.data.sources.local.repository.discover.DiscoverDBRepository
 import com.themovieguide.data.sources.remote.ApiServices
 import com.themovieguide.data.utils.Connectivity
