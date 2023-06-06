@@ -20,7 +20,7 @@ class MovieDetailsCase @Inject constructor(private val repository: Details) :
                     StateDetails.OnSuccess(data = response.data)
                 }
                 is StateSingleMeta.OnFailed -> {
-                    delay(2000)
+                    delay(50)
                     StateDetails.HideLoader
                     StateDetails.OnFailed(error = response.error ?: EMPTY)
                 }

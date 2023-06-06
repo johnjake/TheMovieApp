@@ -10,7 +10,7 @@ class DBMovieImpl @Inject constructor(private var app: AppDatabase) : DBMovieRep
         app.movieDao().insertMovie(movie = movie)
     }
 
-    override fun getMovies(): Flow<List<MovieDB>> {
+    override suspend fun getMovies(): List<MovieDB> {
         return app.movieDao().getMovies()
     }
 
